@@ -1,0 +1,61 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Invoice</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Bootstrap Style -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+</head>
+<body>
+
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>                        
+				</button>
+				<a class="navbar-brand" href="#">INVOICE</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Home</a></li>
+				</ul>
+
+				{% if request.user.is_authenticated %}
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#"><span class="glyphicon glyphicon-user"></span> Welcome@ {{ request.user }}</a></li>
+					<li><a href="{% url 'signout' %}"><span class="glyphicon glyphicon-log-out"></span> Signout</a></li>
+				</ul>
+
+				{% else %}
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
+					<li><a href="{% url 'signin' %}"><span class="glyphicon glyphicon-log-in"></span> Signin</a></li>
+				</ul>
+				{% endif %}
+
+			</div>
+		</div>
+	</nav>
+
+
+	{% block content %}
+	{% endblock %}
+
+
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+	<!-- Bootstrap JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</body>
+</html>
