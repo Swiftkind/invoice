@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-body">
+
+	<a href="{% url 'contact_edit' contact.id %}">Edit</a>
+	<a href="{% url 'contact_delete' contact.id %}">Delete</a>
+	<br><br><br>
+
+	<label>Customer</label><br>
+
+	{{ contact.salutation }}<br>
+	{{ contact.first_name }}<br>
+	{{ contact.last_name }}<br>
+	{{ contact.email_address }}<br>
+	{{ contact.work_phone }}<br>
+	{{ contact.mobile }}<br>
+	{{ contact.company_name }}<br>
+	{{ contact.contact_display_name }}<br>
+	{{ contact.website }}<br>
+
+	<label>other detail</label>
+	<br>
+	{{ contact.skype_account }}<br>
+	{{ contact.currency }}<br>
+	{{ contact.portal }}<br>
+	{{ contact.portal_language }}<br>
+
+	<label>Address</label>
+	<br>
+	<label>Billing Address</label><br>
+	{{ contact.billing_address.attention }}<br>
+	{{ contact.billing_address.street_1 }}<br>
+	{{ contact.billing_address.street_2 }}<br>
+	{{ contact.billing_address.city }}<br>
+	{{ contact.billing_address.state }}<br>
+	{{ contact.billing_address.zip_code }}<br>
+	{{ contact.billing_address.country }}<br>
+	{{ contact.billing_address.phone }}<br>
+	{{ contact.billing_address.fax }}<br>
+	<br>
+	<label>Shipping Address</label><br>
+	{{ contact.shipping_address.attention }}<br>
+	{{ contact.shipping_address.street_1 }}<br>
+	{{ contact.shipping_address.street_2 }}<br>
+	{{ contact.shipping_address.city }}<br>
+	{{ contact.shipping_address.state }}<br>
+	{{ contact.shipping_address.zip_code }}<br>
+	{{ contact.shipping_address.country }}<br>
+	{{ contact.shipping_address.phone }}<br>
+	{{ contact.shipping_address.fax }}<br>
+
+	<br>
+	<label>Contact Person</label><br>
+	{{ contact.contact_person.salutation }}<br>
+	{{ contact.contact_person.first_name }}<br>
+	{{ contact.contact_person.last_name }}<br>
+	{{ contact.contact_person.email_address }}<br>
+	{{ contact.contact_person.work_phone }}<br>
+	{{ contact.contact_person.mobile }}<br>
+
+
+</div>
+{% endblock %}

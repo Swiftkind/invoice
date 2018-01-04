@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if request.user.is_authenticated %}
+<div class="main-body">
+
+
+	<form method="POST" novalidate>
+	{% csrf_token %}
+
+		<h1>New Contact</h1>
+	{% for contact in contact_form %}
+		<div>{{ contact.errors }}</div>
+		<div>{{ contact.label_tag }}{{ contact }}</div><br>
+	{% endfor %}
+    
+      
+	
+
+	<h1>Other Detail</h1>
+	{% for other in other_detail_form %}
+		<div>{{ other.errors }}</div>
+		<div>{{ other.label_tag }}{{ other }}</div><br>
+	{% endfor %}
+
+	<h1>Address</h1><br>
+	<labe>Billing Address</labe>
+	{% for billing in billing_address_form %}
+		<div>{{ billing.errors }}</div>
+		<div>{{ billing.label_tag }}{{ billing }}</div><br>
+	{% endfor %}
+	
+	<labe>Shipping Address</labe>
+	{% for shipping in shipping_address_form %}
+		<div>{{ shipping.errors }}</div>
+		<div>{{ shipping.label_tag }}{{ shipping }}</div><br>
+	{% endfor %}
+
+	<h1>Contact Person</h1>
+	{% for contact_person in contact_person_form %}
+		<div>{{ contact_person.errors }}</div>
+		<div>{{ contact_person.label_tag }}{{ contact_person }}</div>
+	{% endfor %}
+
+	<button type="submit">Save</button>
+
+
+	</form>
+	
+	
+	
+</div>
+{% endif %}
+{% endblock %}

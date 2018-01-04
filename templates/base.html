@@ -9,6 +9,8 @@
 
 	<!-- Bootstrap Style -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- style -->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">
 
 </head>
 <body>
@@ -46,6 +48,44 @@
 	</nav>
 
 
+
+
+
+
+	{% if request.user.is_authenticated %}
+	<div class="nav-side-menu">
+		<div class="brand"><a href="{% url 'index' %}"> INVOICE </a></div>
+		<i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+
+		<div class="menu-list">
+
+			<ul id="menu-content" class="menu-content collapse out">
+				<li>
+					<a href="#">
+						<i class="fa fa-dashboard fa-lg"></i> Dashboard
+					</a>
+				</li>
+
+				<li>
+					<a href="{% url 'contacts' %}">Contacts</a> 
+				</li>
+				<li>
+					<a href="{% url 'contact_add' %}">New Contact
+						<span class="glyphicon glyphicon-plus plus"></span>
+					</a>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+
+
+	{% endif %}
+
+
+
+
+
 	{% block content %}
 	{% endblock %}
 
@@ -56,6 +96,9 @@
 
 	<!-- Bootstrap JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<!-- js -->
+	<script type="text/javascript" src="{% static 'js/custom.js' %}"></script>
 
 </body>
 </html>

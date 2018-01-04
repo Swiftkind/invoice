@@ -40,7 +40,13 @@ INSTALLED_APPS = [
 
     #apps
     'accounts',
+    'contacts',
     'invoice',
+
+    #apps field
+    'languages',
+    'django_countries',
+    'phonenumber_field',
 
 ]
 

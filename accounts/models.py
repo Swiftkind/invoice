@@ -138,6 +138,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     #def get_gmt(self):
     #    return "GMT {}".format(self.get_gmtzone(self.city))
 
-    @property
-    def is_staff(self):
-        return self.is_admin
+    #@property
+    #def is_staff(self):
+    #    return self.is_admin
