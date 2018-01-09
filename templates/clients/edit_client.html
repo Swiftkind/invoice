@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content_auth %}
+
+	<form method="POST" novalidate>
+	{% csrf_token %}
+
+	<h1>Edit Client</h1>
+	<div>{{ client_form.as_p }}</div>
+
+	<br>
+	<h1>Billing</h1>
+	<div>{{ billing_address_form.as_p }}</div>
+	<h1>Shipping</h1>
+	<div>{{ shipping_address_form.as_p }}</div>
+
+	<button type="submit">Save</button>
+
+
+	</form>
+	
+
+{% endblock %}

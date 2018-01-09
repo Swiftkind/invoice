@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content_auth %}
+	<form method="POST" id="client-form-id" novalidate>
+		{% csrf_token %}
+
+		<div>
+			<h3>New Client</h3><hr>
+
+			<div class="form-field">
+				<div class="col-md-3 ">
+					<label>Primary contact</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.salutation|attr:"class:input-control is-valid"|attr:"placeholder:Salutation"}}
+					{{ client_form.first_name|attr:"class:input-control is-valid"|attr:"placeholder:First Name"}}
+					{{ client_form.last_name |attr:"class:input-control is-valid"|attr:"placeholder:Last Name"}}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Company Name</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.company_name|attr:"class:input-control is-valid" }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Client Display Name</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.client_display_name|attr:"class:input-control is-valid" }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Client Email</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.email_address|attr:"class:input-control is-valid" }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Client Phone</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.work_phone |attr:"class:input-control is-valid"	|attr:"placeholder:Phone"  }}
+					{{ client_form.mobile 		|attr:"class:input-control is-valid"	|attr:"placeholder:Mobile" }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Website</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.website|attr:"class:input-control is-valid" }}
+				</div>
+			</div>
+
+			<hr>
+			<h3>Other Detail</h3>
+			<hr>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Skype Name/Number</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.skype_account|attr:"class:input-control is-valid" }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Designation</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.designation|attr:"class:input-control is-valid" }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Department</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.department|attr:"class:input-control is-valid" }}
+				</div>
+			</div>
+			
+			<div class="form-field">
+				<div class="col-md-3 ">
+					<label>Currency</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.currency|attr:"class:input-control is-valid"}}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3 ">
+					<label>Payment Terms</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.payment_terms|attr:"class:input-control is-valid"}}
+				</div>
+			</div>
+			
+			<div class="form-field">
+				<div class="col-md-3 ">
+					<label>Enable Portal?</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.portal|attr:"class:input-control is-valid"}}
+				</div>
+			</div>
+			
+			<div class="form-field">
+				<div class="col-md-3 ">
+					<label>Portal Language</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.portal_language|attr:"class:input-control is-valid"}}
+				</div>
+			</div>
+					
+			<div class="form-field">
+				<div class="col-md-3 ">
+					<label>Facebook</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.facebook|attr:"class:input-control is-valid"}}
+				</div>
+			</div>
+			
+			<div class="form-field">
+				<div class="col-md-3 ">
+					<label>Twitter</label>
+				</div>
+				<div class="col-md-9">
+					{{ client_form.twitter|attr:"class:input-control is-valid"}}
+				</div>
+			</div>
+
+			<hr>
+
+			<div class="col-md-12">
+			<div class="col-md-6">
+				<h3>Billing Address</h3>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Attention</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.attention|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Address</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.street_1|attr:"class:input-control is-valid"|attr:"placeholder:Street 1"}}
+						<br>
+						{{ billing_address_form.street_2|attr:"class:input-control is-valid"|attr:"placeholder:Street 2"}}
+						<br>
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>City</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.city|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>State</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.state|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Zip Code</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.zip_code|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Country</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.country|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Phone</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.phone|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Fax</label>
+					</div>
+					<div class="col-md-9">
+						{{ billing_address_form.fax|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<h3>Shipping Address</h3>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Attention</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.attention|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Address</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.street_1|attr:"class:input-control is-valid"|attr:"placeholder:Street 1"}}
+						<br>
+						{{ shipping_address_form.street_2|attr:"class:input-control is-valid"|attr:"placeholder:Street 2"}}
+						<br>
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>City</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.city|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>State</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.state|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Zip Code</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.zip_code|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Country</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.country|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Phone</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.phone|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+				<div class="form-field">
+					<div class="col-md-3 ">
+						<label>Fax</label>
+					</div>
+					<div class="col-md-9">
+						{{ shipping_address_form.fax|attr:"class:input-control is-valid"}}
+					</div>
+				</div>
+
+			</div>
+			</div>
+			<hr>
+		<div class="col-md-12">
+			<br><hr>
+			<div class="col-md-8"></div>
+			<div class="col-md-4">					
+					<button type="" class="btn btn-primary">Cancel</button>
+					<button type="submit" class="btn btn-primary">Save</button>
+			</div>
+			<br>
+			<hr>
+		</div>
+
+		</div>
+	</form>
+
+{% endblock %}

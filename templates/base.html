@@ -1,5 +1,15 @@
 {% load staticfiles %}
 
+{% url 'clients'     as clients_url     %}
+{% url 'client_view' as client_view_url %}
+{% url 'client_add'  as client_add_url  %}
+{% url 'client_edit' as client_edit_url %}
+
+{% url 'items'       as items_url       %}
+{% url 'item_add'    as item_add_url    %}
+{% url 'invoices'    as invoices_url    %}
+{% url 'invoice_add' as invoice_add_url %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,8 +24,7 @@
 
 </head>
 <body>
-
-	<nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-color navbar-fixed-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -47,49 +56,39 @@
 		</div>
 	</nav>
 
-
-
-
-
-
+	<div class="main">
 	{% if request.user.is_authenticated %}
-	<div class="nav-side-menu">
-		<div class="brand"><a href="{% url 'index' %}"> INVOICE </a></div>
-		<i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
-
-		<div class="menu-list">
-
-			<ul id="menu-content" class="menu-content collapse out">
-				<li>
-					<a href="#">
-						<i class="fa fa-dashboard fa-lg"></i> Dashboard
-					</a>
-				</li>
-
-				<li>
-					<a href="{% url 'contacts' %}">Contacts</a> 
-				</li>
-				<li>
-					<a href="{% url 'contact_add' %}">New Contact
-						<span class="glyphicon glyphicon-plus plus"></span>
-					</a>
-				</li>
-
-			</ul>
+		<div class="col-md-2">
+		<ul class="sidenav">
+  		<li><a class="{% if request.path == clients_url %}active{% else %}haha{% endif %}" 
+  					 href="{{ clients_url }}">     Clients     </a></li>
+  		<li><a class="{% if request.path == client_add_url %}active{% else %}haha{% endif %}" 
+  					 href="{{ client_add_url }}">  New Client  <span class="glyphicon glyphicon-plus plus"></span></a></li>
+			<li><a class="{% if request.path == items_url %}active{% else %}haha{% endif %}" 
+						 href="{{ items_url }}">       Items       </a></li>
+			<li><a class="{% if request.path == item_add_url %}active{% else %}haha{% endif %}" 
+						 href="{{ item_add_url }}">    New Item    <span class="glyphicon glyphicon-plus plus"></span></a></li>
+			<li><a class="{% if request.path == invoices_url %}active{% else %}haha{% endif %}" 
+						 href="{{ invoices_url }}">    Invoice     </a></li>
+			<li><a class="{% if request.path == invoice_add_url %}active{% else %}haha{% endif %}" 
+						 href="{{ invoice_add_url }}"> New Invoice <span class="glyphicon glyphicon-plus plus"></span></a></li>
+		</ul>
 		</div>
-	</div>
 
-
+		<div class="col-md-10 content-auth">
+  		{% block content_auth %}
+			{% endblock %}
+		</div>
 	{% endif %}
 
-
-
-
-
-	{% block content %}
-	{% endblock %}
-
-
+	{% if not request.user.is_authenticated %}
+		<div class="col-md-12 content-not-auth">
+  		{% block content_not_auth %}
+			{% endblock %}
+		</div>
+	{% endif %}
+	
+	</div>
 
 	<!-- jQuery library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

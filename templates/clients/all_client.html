@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content_auth %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>NAME</th>
+				<th>COMPANY NAME</th>
+				<th>EMAIL</th>
+				<th>WORK PHONE</th>
+				<th>RECEIVABLES</th>
+				<th>UNUSED CREDITS</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for client in clients %}
+			<tr>
+				<td><a href="{% url 'client_view' client.id %}">{{ client.client_display_name }}</a></td>
+				<td>{{ client.company_name }}</td>
+				<td>{{ client.email }}</td>
+				<td>{{ client.work_phone }}</td>
+				<td></td>
+				<td></td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

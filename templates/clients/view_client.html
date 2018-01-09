@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content_auth %}
+
+
+	<div class="col-md-12">
+	<br>
+		<div class="col-md-8"><label>Client</label></div>
+		<div class="col-md-4">					
+			<a href="{% url 'client_edit' client.id %}" class="btn">Edit</a>
+			<a href="{% url 'client_delete' client.id %}" class="btn">Delete</a>
+		</div>
+		<br>
+		<hr>
+	</div>
+
+<div class="col-md-12">
+
+	<ul class="nav nav-pills">
+		<li class="active"><a data-toggle="pill" href="#overview">Overview</a></li>
+		<li><a data-toggle="pill" href="#comments">Comments</a></li>	
+		<li><a data-toggle="pill" href="#sales">Sales</a></li>
+		<li><a data-toggle="pill" href="#mails">Mails</a></li>
+		<li><a data-toggle="pill" href="#statement">Statement</a></li>
+	</ul>
+
+<div class="tab-content">
+	<div id="overview" class="tab-pane fade in active">
+    <h3>Client Info</h3>
+
+    	<div class="form-field">
+				<div class="col-md-3">
+					<label>Full name:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.salutation|default_if_none:" " }}
+					 {{ client.first_name|default_if_none:" " }}
+					 {{ client.last_name |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Email Address:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.email_address |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Work Phone:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.work_phone |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Mobile:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.mobile |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Company Name:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.company_name |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Contact Display Name:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.client_display_name |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Website:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.website |default_if_none:" " }}
+				</div>
+			</div>
+
+			<h3>Other Detail</h3><br>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Skype Account:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.skype_account |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Currency:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.currency |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Portal:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.portal }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Portal Language:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.portal_language |default_if_none:" " }}
+				</div>
+			</div>
+
+			<label>Billing Address</label><br>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Attention:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.attention |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Address Street 1:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.street_1 |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Address Street 2:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.street_2 |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>City:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.city |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>State:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.state |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Zip Code:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.zip_code |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Country:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.country |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Phone:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.phone |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Fax:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.billing_address.fax |default_if_none:" " }}
+				</div>
+			</div>
+
+
+			<label>Shipping Address</label><br>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Attention:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.attention |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Address Street 1:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.street_1 |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Address Street 2:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.street_2 |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>City:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.city |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>State:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.state |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Zip Code:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.zip_code |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Country:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.country |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Phone:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.phone |default_if_none:" " }}
+				</div>
+			</div>
+
+			<div class="form-field">
+				<div class="col-md-3">
+					<label>Fax:</label>
+				</div>
+				<div class="col-md-9">
+					 {{ client.shipping_address.fax |default_if_none:" " }}
+				</div>
+			</div>
+  </div>
+
+  <div id="comments" class="tab-pane fade">
+    <h3>Comment Section</h3>
+  </div>
+  <div id="sales" class="tab-pane fade">
+    <h3>Sales Section</h3>
+  </div>
+  <div id="mails" class="tab-pane fade in active">
+    <h3>Mails Section</h3>
+  </div>
+  <div id="statement" class="tab-pane fade in active">
+    <h3>Statement Section</h3>
+  </div>
+</div>
+
+</div>
+{% endblock %}

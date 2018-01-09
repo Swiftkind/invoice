@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% if not request.user.is_authenticated %}
+	{% block content_not_auth %}
+		<h1>This is Index</h1>
+	{% endblock %}
+{% endif %}
 
-
-{% endblock %}
+{% if request.user.is_authenticated %}
+	{% block content_auth %}
+		<h1>This is Index Auth</h1>
+	{% endblock %}
+{% endif %}

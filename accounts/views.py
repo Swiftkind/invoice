@@ -2,18 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.views import View
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from accounts.forms import SigninForm, SignupForm
-from accounts.models import Account
-
-# Create your views here.
-class IndexView(TemplateView):
-	"""
-	Main page
-	"""
-	template_name = 'index.html'
-
+from accounts.forms import *
+from accounts.models import *
 
 class SigninView(TemplateView):
 	template_name = 'accounts/signin.html'
