@@ -40,21 +40,21 @@ class Client(models.Model):
 	salutation          = models.CharField(max_length=4,  null=True, blank=True, choices=SALUTATION, default='')
 	first_name          = models.CharField(max_length=40, null=True, blank=True, default='')
 	last_name           = models.CharField(max_length=40, null=True, blank=True, default='')
-	email_address       = models.EmailField(max_length=255,null=True, blank=True, unique=False)
-	work_phone          = models.CharField(max_length=18, null=True, blank=True, default='')
-	mobile              = models.CharField(max_length=12, null=True, blank=True, default='')
-	client_display_name = models.CharField(max_length=255)
+	email_address       = models.EmailField(max_length=255,null=True, blank=True, unique=True)
+	work_phone          = models.CharField(max_length=18, null=True, blank=True, default='', unique=True)
+	mobile              = models.CharField(max_length=12, null=True, blank=True, default='', unique=True)
+	client_display_name = models.CharField(max_length=255, null=True, blank=True, unique=True)
 	company_name        = models.CharField(max_length=255, null=True, blank=True, default='')
 	website             = models.URLField(max_length=100,  null=True, blank=True, default='')
-	skype_account       = models.CharField(max_length=100, null=True, blank=True, default='')
+	skype_account       = models.CharField(max_length=100, null=True, blank=True, default='', unique=True)
 	designation         = models.CharField(max_length=100, null=True, blank=True, default='')
 	department          = models.CharField(max_length=100, null=True, blank=True, default='')
 	currency            = models.CharField(max_length=10,  null=True, choices=CURRENCY, default='')
 	payment_terms       = models.CharField(max_length=40,  null=True, blank=True, choices=PAYMENT_TERMS, default='')
 	portal              = models.BooleanField(default=False)
 	portal_language     = LanguageField(max_length=40,     null=True, blank=True, default='')
-	facebook            = models.CharField(max_length=100, null=True, blank=True, default='')
-	twitter             = models.CharField(max_length=100, null=True, blank=True, default='')
+	facebook            = models.CharField(max_length=100, null=True, blank=True, default='', unique=True)
+	twitter             = models.CharField(max_length=100, null=True, blank=True, default='', unique=True)
 	remarks             = models.TextField(max_length=500, null=True, blank=True, default='')
 
 	billing_address     = models.ForeignKey(BillingAddress,   on_delete=models.CASCADE, null=True, blank=True)
@@ -64,7 +64,7 @@ class Client(models.Model):
 
 	#class Meta:
 	#	ordering = ["-email_address"]
-	#	unique_together = (('email_address','contact_person.email_address'),)
+	#	unique_together = ( ('work_phone','mobile'),)
 
 	@property
 	def full_name(self):

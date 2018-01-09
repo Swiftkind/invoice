@@ -25,7 +25,7 @@ SECRET_KEY = 'j98kyw=kb0_w&u+7a6$we*7+^ktz5a1++^ndz-rw%1+bb0bsi9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.swiftkind-swiftinvoice.com', 'localhost']
 
 
 # Application definition
@@ -89,8 +89,12 @@ WSGI_APPLICATION = 'swift_invoice.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'db_invoice',
+        'USER': 'db_user',
+        'PASSWORD': 'db_user_invoice',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

@@ -38,7 +38,7 @@ class ClientAddView(LoginRequiredMixin,TemplateView):
 			client.save()
 			return redirect('clients')
 		else:
-			context = get_context_data(**kwargs)
+			context = self.get_context_data(**kwargs)
 		return render(self.request, self.template_name, context=self.get_context_data(**kwargs))
 
 	def get_context_data(self,**kwargs):
@@ -71,7 +71,7 @@ class ClientEditView(LoginRequiredMixin,TemplateView):
 			client.save()
 			return redirect('clients')
 		else:
-			context = get_context_data(**kwargs)
+			context = self.get_context_data(**kwargs)
 		return render(self.request, self.template_name, context=self.get_context_data(**kwargs))
 
 	def get_context_data(self,**kwargs):
