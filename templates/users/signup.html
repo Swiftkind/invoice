@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content_not_auth %}
+<div class="col-md-3"></div>
+<div class="col-md-6 panel panel-default sign-up">
+  <div class="panel-body"></div>
+  <form method="POST" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="row">
+      <h3  style="text-align: center;"><strong>SIGN-UP</strong></h3><hr>
+    </div>
+    <div class="row" style="margin-left: 10%;">
+      <div class="form-group">
+        <div class="col-md-3"><label >Userame*:</label></div>
+        <div class="col-md-9">
+          <div class="col-md-5">{{form.name|attr:"placeholder:user name"}}</div>
+          <div class="col-md-7">{{form.errors.name}}</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-3"><label>Email*:</label></div>
+        <div class="col-md-9">
+          <div class="col-md-5">{{form.email|attr:"placeholder:ex. Swiftcompany@gmail.com"}}</div>
+          <div class="col-md-7">{{form.errors.email}}</div>
+        </div>
+      </div>
+
+      
+      <div class="form-group">
+        <div class="col-md-3"><label>Company Name*:</label></div>
+        <div class="col-md-9">
+          <div class="col-md-5">{{form.company|attr:"placeholder:ex. Swiftcompany inc."}}</div>
+          <div class="col-md-7">{{form.errors.company}}</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-3"><label>Company logo*:</label></div>
+        <div class="col-md-9">
+          <div class="col-md-5">{{form.logo}}</div>
+          <div class="col-md-7">{{form.errors.logo}}</div>
+        </div>
+
+      </div>
+    </div>
+    
+    
+    <div class="row" style="margin-left: 10%;">
+      <hr>
+      <div class="form-group">
+        <div class="col-md-3"><label>Address*:</label></div>
+        <div class="col-md-9">
+
+          <div class="col-md-12 address">
+            <div class="col-md-5">{{form.province|attr:"placeholder:Province"}}</div>
+            <div class="col-md-7">{{form.errors.province}}</div> 
+          </div>
+          
+          <div class="col-md-12 address">
+            <div class="col-md-5">{{form.city|attr:"placeholder:City" }}</div>
+            <div class="col-md-7">{{ form.errors.city }}</div>
+          </div>
+          
+          <div class="col-md-12 address">
+            <div class="col-md-5">{{ form.street|attr:"placeholder:Street"}}</div>
+            <div class="col-md-7">{{form.errors.street}}</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row" style="margin-left: 10%;">
+      <hr>
+      <div class="form-group">
+        <div class="col-md-3"><label>Password*:</label></div>
+        <div class="col-md-9">
+          <div class="col-md-5">{{form.password|attr:"placeholder:Password"}}</div>
+          <div class="col-md-7">{{form.errors.password}}</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-3"><label>Confirm Password*:</label></div>
+        <div class="col-md-9">
+          <div class="col-md-5">{{form.confirm_password|attr:"placeholder:Confirm Password"}}</div>
+          <div class="col-md-7">{{form.errors.confirm_password}}</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="form-group pull-right">
+      <hr>
+      <button type="submit" class="btn btn-default">Signup</button>
+    </div>
+  </form>
+</div>
+
+
+<div class="col-md-3"></div>
+
+{% endblock %}

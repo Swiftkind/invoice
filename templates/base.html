@@ -1,15 +1,5 @@
 {% load staticfiles %}
-
-{% url 'clients'     as clients_url     %}
-{% url 'client_view' as client_view_url %}
-{% url 'client_add'  as client_add_url  %}
-{% url 'client_edit' as client_edit_url %}
-
-{% url 'items'       as items_url       %}
-{% url 'item_add'    as item_add_url    %}
-{% url 'invoices'    as invoices_url    %}
-{% url 'invoice_add' as invoice_add_url %}
-
+{% load user_tag %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,23 +22,28 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>                        
 				</button>
-				<a class="navbar-brand" href="#">INVOICE</a>
+				<a class="navbar-brand" href="{% url 'index' %}">INVOICE</a>
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
-				<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Home</a></li>
-				</ul>
 
 				{% if request.user.is_authenticated %}
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#"><span class="glyphicon glyphicon-user"></span> Welcome@ {{ request.user }}</a></li>
-					<li><a href="{% url 'signout' %}"><span class="glyphicon glyphicon-log-out"></span> Signout</a></li>
+					<li class="add-subuser-header"><a href="{% url 'index' %}">Home</a></li>
+					<li class="add-subuser-header"><a href="{% url 'clients' %}">Clients</a></li>
+					<li class="add-subuser-header"><a href="{% url 'invoices' %}">Invoices</a></li>
+					<li class="add-subuser-header"><a href="{% url 'subuser_add' request.user.id %}"><span class="glyphicon glyphicon-plus plus"></span>Sub User</a></li>
+
+					<li class="user-name-header"><a href="{% url 'profile' request.user.id %}"><span ><img src="{% get_profile_pic request.user.id %}" width='40px' height="25px" ></span> {{ request.user.email }}</a></li>
+
+
+
+					<li class="user-out-header"><a href="{% url 'signout' %}"><span class="glyphicon glyphicon-log-out"></span> Signout</a></li>
 				</ul>
 
 				{% else %}
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
-					<li><a href="{% url 'signin' %}"><span class="glyphicon glyphicon-log-in"></span> Signin</a></li>
+					<li class="sign-up-header" ><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
+					<li class="sign-in-header" ><a href="{% url 'signin' %}"><span class="glyphicon glyphicon-log-in"></span> Signin</a></li>
 				</ul>
 				{% endif %}
 
@@ -57,37 +52,19 @@
 	</nav>
 
 	<div class="main">
-	{% if request.user.is_authenticated %}
-		<div class="col-md-2">
-		<ul class="sidenav">
-  		<li><a class="{% if request.path == clients_url %}active{% else %}haha{% endif %}" 
-  					 href="{{ clients_url }}">     Clients     </a></li>
-  		<li><a class="{% if request.path == client_add_url %}active{% else %}haha{% endif %}" 
-  					 href="{{ client_add_url }}">  New Client  <span class="glyphicon glyphicon-plus plus"></span></a></li>
-			<li><a class="{% if request.path == items_url %}active{% else %}haha{% endif %}" 
-						 href="{{ items_url }}">       Items       </a></li>
-			<li><a class="{% if request.path == item_add_url %}active{% else %}haha{% endif %}" 
-						 href="{{ item_add_url }}">    New Item    <span class="glyphicon glyphicon-plus plus"></span></a></li>
-			<li><a class="{% if request.path == invoices_url %}active{% else %}haha{% endif %}" 
-						 href="{{ invoices_url }}">    Invoice     </a></li>
-			<li><a class="{% if request.path == invoice_add_url %}active{% else %}haha{% endif %}" 
-						 href="{{ invoice_add_url }}"> New Invoice <span class="glyphicon glyphicon-plus plus"></span></a></li>
-		</ul>
-		</div>
-
-		<div class="col-md-10 content-auth">
-  		{% block content_auth %}
+		{% if request.user.is_authenticated %}
+		<div class="col-md-12 content-auth">
+			{% block content_auth %}
 			{% endblock %}
 		</div>
-	{% endif %}
-
-	{% if not request.user.is_authenticated %}
-		<div class="col-md-12 content-not-auth">
-  		{% block content_not_auth %}
+		{% endif %}
+		{% if not request.user.is_authenticated %}
+		<div class="col-md-12 content-not-auth" >
+			{% block content_not_auth %}
 			{% endblock %}
 		</div>
-	{% endif %}
-	
+		{% endif %}
+
 	</div>
 
 	<!-- jQuery library -->

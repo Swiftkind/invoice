@@ -1,0 +1,99 @@
+	{% extends 'base.html' %}
+	{% load user_tag %}
+	{% load widget_tweaks %}
+	{% block content_auth %}
+
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+		<form method="POST" enctype="multipart/form-data" novalidate>
+			{% csrf_token %}
+			<div class="col-md-12" style="text-align: center;">
+				<br>
+				<div class="row">
+					<img src="{% get_profile_pic request.user.id %}" width='70px' height="55px" >
+				</div>
+			</div>
+
+			<div class="col-md-12" align='center'>
+				
+				<div class="row">
+					{{form.avatar}}
+
+				</div>
+				<br>
+			</div>
+
+			<div class="col-md-12">
+				<div class="col-md-3"><label>Username*:</label></div>
+				<div class="col-md-9">
+					<div class="col-md-5">{{form.name|attr:"placeholder:username"}}</div>
+					<div class="col-md-7">{{form.errors.name}}</div>
+				</div>
+
+			</div>
+
+			<div class="col-md-12">
+				<div class="col-md-3"><label>Company Name*:</label></div>
+				<div class="col-md-9">
+					<div class="col-md-5">{{form.company|attr:"placeholder:ex. Swiftcompany"}}</div>
+					<div class="col-md-7">{{form.errors.company}}</div>
+				</div>
+
+			</div>
+			<br>
+			<div class="col-md-12">
+				<div class="col-md-3"><label>Company Email*:</label></div>
+				<div class="col-md-9">
+					<div class="col-md-5">{{form.email|attr:"placeholder:ex. Swiftcompany@gmail.com"}}</div>
+					<div class="col-md-7">{{form.errors.email}}</div>
+				</div>
+
+			</div>
+
+			<br>
+			<div class="col-md-12">
+				<div class="col-md-3"><label>Address*:</label></div>
+				<div class="col-md-9">
+
+					<div class="col-md-12">
+						<div class="col-md-5">{{form.province|attr:"placeholder:Province"}}</div>
+						<div class="col-md-7">{{form.errors.province}}</div> 
+					</div>
+
+					<div class="col-md-12">
+						<div class="col-md-5">{{form.city|attr:"placeholder:City" }}</div>
+						<div class="col-md-7">{{ form.errors.city }}</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="col-md-5">{{ form.street|attr:"placeholder:Street"}}</div>
+						<div class="col-md-7">{{form.errors.street}}</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="col-md-12" style="text-align: center;">
+				<br>
+				<div class="row">
+					<img src="{% get_company_logo_pic request.user.id %}" width='100px' height="100px" >
+				</div>
+			</div>
+
+			<div class="col-md-12" align='center'>
+				
+				<div class="row">
+					{{form.logo}}
+
+				</div>
+				<br>
+			</div>
+			
+			<div class="form-group pull-right">
+
+				<button type="submit" class="btn btn-default">Update User</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-md-3"></div>
+	{% endblock %}

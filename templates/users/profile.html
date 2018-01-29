@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load user_tag %}
+{% load widget_tweaks %}
+{% block content_auth %}
+
+<div class="col-md-3"></div>
+
+<div class="col-md-6">
+	<div class="col-md-12">
+		<br>
+		<div class="col-md-8"></div>
+		<div class="col-md-4">					
+			<a href="{% url 'user_update' user.id %}" class="btn">Edit </a>
+		</div>
+
+		<hr>
+	</div>
+
+	<div class="col-md-12">
+
+		<div class="col-md-12" style="text-align: center;">
+			<div class="row"><img src="{% get_profile_pic request.user.id %}" width='70px' height="55px" ></div>
+			<div class="row">{{ user.name }}</div>
+		</div>
+	</div>
+
+	<div class="col-md-12" style="margin-left: 14%;">
+		<br>
+		<div class="col-md-3">
+			<label >Company Name:</label>
+		</div>
+		<div class="col-md-9">
+			{{ user.company }}
+		</div>
+	</div>
+
+
+	<div class="col-md-12" style="margin-left: 14%;">
+		<div class="col-md-3">
+			<label >Company Email:</label>
+		</div>
+		<div class="col-md-9">
+			{{ user.email }}
+		</div>
+	</div>
+
+	<div class="col-md-12"  style="margin-left: 14%;">
+		<div class="col-md-3">
+			<label >Address:</label>
+		</div>
+		<div class="col-md-9">
+			<div class="fluid">{{ user.street }}, {{ user.city }}, {{ user.province }}, {{ user.country }}</div>
+		</div>
+	</div>
+
+
+	<div class="col-md-12">
+		<br>
+		<div class="col-md-12" style="text-align: center;">
+			<div class="row"><img src="{% get_company_logo_pic request.user.id %}" width='100px' height="100px" ></div>
+			<div class="row"> <p>company logo</p></div>
+		</div>
+	</div>
+
+
+</div>
+
+<div class="col-md-3"></div>
+
+{% endblock %}

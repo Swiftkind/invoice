@@ -1,86 +1,67 @@
-from django.forms import *
-from custom.custom_widget import *
-from clients.models import *
+from django.forms import (	ValidationError, 
+							ModelForm, 
+							Form, 
+							EmailField, 
+							CharField,
+							ChoiceField,
+							URLField, 
+							EmailInput, 
+							PasswordInput,
+							TextInput,
+						)
+from clients.models import Client
+from django.core.validators import URLValidator, MinLengthValidator
 
-class ShippingAddressForm(ModelForm):
-	class Meta:
-		model = ShippingAddress
-		fields = '__all__'
+from django.core.validators import MaxLengthValidator
+from django.conf import settings
+from django.forms.utils import  ErrorList
 
-class BillingAddressForm(ModelForm):
-	class Meta:
-		model = BillingAddress
-		fields = '__all__'
 
-class AdditionalAddressForm(ModelForm):
-	class Meta:
-		model = AdditionalAddress
-		fields = '__all__'
 
 class ClientForm(ModelForm):
+
+	
 	class Meta:
 		model = Client
-		exclude = ['billing_address', 'shipping_address', 'additional_address',]
+		fields = ('display_name','first_name',  'last_name','email','mobile')
 
-	'''
+	def __init__(self,*args, **kwargs):
+		#import pdb; pdb.set_trace()
+		self.user = kwargs.pop('user', None)
+		return super(ClientForm, self).__init__(*args, **kwargs)
+
+	def clean_display_name(self):
+		#import pdb; pdb.set_trace()
+		display_name = self.cleaned_data['display_name']
+		if display_name:
+				test_display_name = Client.objects.filter(display_name__exact=display_name, owner__exact=self.user)
+				if test_display_name.exists():
+					raise ValidationError("name already exists")
+		return display_name
+
+	def clean_email(self):
+		email = self.cleaned_data['email']
+		if email:
+			test_email = Client.objects.filter(email__exact=email, owner__exact=self.user)
+			if test_email.exists():
+				raise ValidationError("email already used by other client")
+		return email
+
+	def clean_mobile(self):
+		mobile = self.cleaned_data['mobile']
+		if mobile:
+			test_mobile = Client.objects.filter(mobile__exact=mobile, owner__exact=self.user)
+			if test_mobile.exists():
+				raise ValidationError("mobile already used by other client")
+		return mobile
+
 	def save(self, commit=True):
-
+		#import pdb; pdb.set_trace()
+		instance = super(ClientForm, self).save(commit=False)
+		instance.owner = self.user
+		#contact = Client(**self.cleaned_data)
 		if commit:
-			contact = super(ClientForm, self).save(commit=False)
-			print('jojo')
-			print(contact)
-			#billing = BillingAddressForm().save()
-			#contact.billing_address = billing
-
-			contact.save()
-			print('hehe --')
-			print(contact)
-		return contact
-	'''
+			instance.save()
+		return instance
 
 
-
-	'''
-	def save(self, commit=True):
-		#import pdb; pdb.set_trace()
-		""" 
-		Saves the user data
-		"""
-		contact = super(ContactForm, self).save(commit=False)
-		#billing = BillingAddressForm().save()
-		#contact.billing_address = billing
-
-		contact.save()
-		return contact
-	'''
-
-
-	'''
-	def save(self, commit=True, *args, **kwargs):
-		#import pdb; pdb.set_trace()
-		contact = super(ContactForm, self).save(commit=False)
-		contact.salutation    = self.cleaned_data['salutation']
-		contact.first_name    = self.cleaned_data['first_name']
-		contact.last_name     = self.cleaned_data['last_name']
-		contact.email_address = self.cleaned_data['email_address']
-		contact.work_phone    = self.cleaned_data['work_phone']
-		contact.mobile        = self.cleaned_data['mobile']
-		contact.contact_display_name = self.cleaned_data['contact_display_name']
-		contact.company_name  = self.cleaned_data['company_name']
-		contact.website       = self.cleaned_data['website']
-		contact.currency      = self.cleaned_data['currency']
-		contact.payment_terms = self.cleaned_data['payment_terms']
-		contact.portal        = self.cleaned_data['portal']
-		contact.portal_language = self.cleaned_data['portal_language']
-		contact.facebook      = self.cleaned_data['facebook']
-		contact.twitter      = self.cleaned_data['twitter']
-		contact.remarks      = self.cleaned_data['remarks']
-
-		contact.save()
-		return contact
-	'''
-
-
-
-	
-	

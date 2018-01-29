@@ -1,5 +1,5 @@
 """
-WSGI config for zoho project.
+WSGI config for swift_invoice project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
