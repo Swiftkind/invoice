@@ -156,3 +156,10 @@ EMAIL_HOST_USER = 'firstlastzoh0@gmail.com'
 EMAIL_HOST_PASSWORD = 'kill_zoho'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+try:
+    from .local_settings import *
+except ImportError as e:
+    if "local_settings" not in str(e):
+        raise e
