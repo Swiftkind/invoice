@@ -364,9 +364,30 @@ class InvoicePdfView(PDFTemplateView):
 '''
 
 
+from django.http import HttpResponse
+from django.views.generic import View
+from invoices.utils import render_to_pdf #created in step 4
+
+class GeneratePdf(TemplateView):
+
+	def get_context_data(self,**kwargs):
+		user = get_object_or_404(User, pk=kwargs['user_id'])
+		context = super().get_context_data(**kwargs)
+		
+		context['logo'] = str(settings.MEDIA_ROOT)+str(user.logo)
+		#context['invoice'] = 
+		
+		return context
 
 
-#from wkhtmltopdf.views import PDFTemplateView
+	def get(self, request, *args, **kwargs):
+		
+		context = self.get_context_data(**kwargs)
+	
+		pdf = render_to_pdf('invoices/pdf.html', context)
+		return HttpResponse(pdf, content_type='application/pdf')
+
+
 class InvoicePdfView(LoginRequiredMixin,PdfMixin, TemplateView):
 	def get(self, *args, **kwargs):
 		template = get_template( settings.BASE_DIR+'/templates/invoices/pdf.html') 
