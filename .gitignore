@@ -1,5 +1,5 @@
 *.pyc
-*local_settings.py
+*local.py
 media/
 static/
 *db.sqlite3
