@@ -36,23 +36,24 @@ class IndexView(TemplateView):
 
 	def get_context_data(self,**kwargs):
 		context = super().get_context_data(**kwargs)
-		try :
+		try:
 			clients = Client.objects.filter( owner=self.request.user)
 		except:
-			clients = Client.objects.all()
+			pass
 		try:
 			context['invoices'] = Invoice.objects.filter( owner=self.request.user)
 		except:
-			context['invoices'] = Invoice.objects.all()
+			pass
 
 		context['client_form'] = ClientForm() 
 		query = self.request.GET.get("q")
 		if query:
-			try:
-				clients = clients.filter(Q(display_name__icontains=query,  owner=self.request.user) )
-			except:
-				clients = clients.filter(Q(display_name__icontains=query) )
-		context['clients'] =  clients
+			clients = clients.filter(Q(display_name__icontains=query,  owner=self.request.user) )
+
+		try:
+			context['clients'] =  clients
+		except:
+			pass
 		return context
 
 
@@ -63,10 +64,7 @@ class IndexView(TemplateView):
 	def post(self, *args, **kwargs):
 		client_form = ClientForm(self.request.POST,user=self.request.user)
 		if client_form.is_valid() :
-			try:
-				client = client_form.save(commit=False)
-			except:
-				client = client_form.save(commit=False)
+			client = client_form.save(commit=False)
 			client.save()
 			messages.success(self.request, 'Client is successfully added')
 			return redirect('index')
@@ -74,12 +72,10 @@ class IndexView(TemplateView):
 			context = super().get_context_data(**kwargs)
 			context['client_form'] = client_form
 			context['client_form_errors' ] = client_form.errors
-			try:
-				context['invoices'] = Invoice.objects.filter( owner=self.request.user)
-				context['clients'] =  Client.objects.filter(  owner=self.request.user)
-			except:
-				context['invoices'] = Invoice.objects.all()
-				context['clients'] =  Client.objects.all()	
+
+			context['invoices'] = Invoice.objects.filter( owner=self.request.user)
+			context['clients'] =  Client.objects.filter(  owner=self.request.user)
+
 		return render(self.request, self.template_name, context=context)
 
 
@@ -94,10 +90,7 @@ class MakeInvoiceView(LoginRequiredMixin,TemplateView):
 		context['invoice_form'] = InvoiceForm()
 		context['invoice_form'].fields['client'].empty_label = None
 		context['invoice_form'].fields['client'].queryset =  Client.objects.filter(pk=kwargs['client_id'])
-		try:
-			context['invoice'] = int(str(Invoice.objects.latest('pk'))) + 1
-		except:
-			context['invoice'] = 1
+
 		return context
 
 	def get(self, *args, **kwargs):
@@ -106,47 +99,39 @@ class MakeInvoiceView(LoginRequiredMixin,TemplateView):
 
 	def post(self, *args, **kwargs):
 		#import pdb; pdb.set_trace()
-		invoice_form = InvoiceForm(self.request.POST, user=self.request.user)
-		if  invoice_form.is_valid() :		
-			invoice = invoice_form.save(commit=False) 
+		invoice_form = InvoiceForm(self.request.POST,user=self.request.user,invoice_type=invoice_type )
+		if  invoice_form.is_valid() :
+
+			invoice = invoice_form.save(commit=False,company=self.request.user.company)
 			invoice.save()
 			client = Client.objects.get(pk = kwargs['client_id'])
 			client.invoiced = True
 			client.save()
+
 			messages.success(self.request, 'Client is successfully invoiced')
 			return redirect('index')
 		else:
 			context =self.get_context_data(**kwargs)
 			context['invoice_form'] = invoice_form
-			try:
-				context['invoice_form'].fields['client'].queryset =  Client.objects.filter(owner=self.request.user)
-				context['invoice'] = int(str(Invoice.objects.latest('pk'))) + 1
-			except:
-				context['invoice_form'].fields['client'].queryset =  Client.objects.all()
-				context['invoice'] = 1
+			context['invoice_form'].fields['client'].queryset =  Client.objects.filter(owner=self.request.user)
+
 		return render(self.request, self.template_name, context)
 
 
 
-class InvoicesView(LoginRequiredMixin,TemplateView):
+class InvoiceListView(LoginRequiredMixin,TemplateView):
 	template_name = 'invoices/all_invoice.html'
 
 	def get_context_data(self,**kwargs):
 		context = super().get_context_data(**kwargs)
-		try:
-			invoices = Invoice.objects.filter( owner=self.request.user)
-		except:
-			invoices = Invoice.objects.all()
-		try:
-			context['invoices'] = Invoice.objects.filter( owner=self.request.user)
-		except:
-			context['invoices'] = Invoice.objects.all()
+		invoices = Invoice.objects.filter( owner=self.request.user)
+
+		context['invoices'] = Invoice.objects.filter( owner=self.request.user)
+
 		query = self.request.GET.get("q")
 		if query:
-			try:
-				invoices = invoices.filter(Q(invoice_number__icontains=query,  owner=self.request.user) )
-			except:
-				invoices = invoices.filter(Q(invoice_number__icontains=query) )
+			invoices = invoices.filter(Q(invoice_number__icontains=query,  owner=self.request.user) )
+
 		context['invoices'] =  invoices
 		return context
 
@@ -157,21 +142,21 @@ class InvoicesView(LoginRequiredMixin,TemplateView):
 
 
 
-class InvoiceViewView(LoginRequiredMixin,PdfMixin,TemplateView):
+class InvoiceView(LoginRequiredMixin,PdfMixin,TemplateView):
 	template_name = 'invoices/view_invoice.html'
 
 	def get(self, *args, **kwargs):
 		invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
-		self.save_pdf(**kwargs)
-		invoice.pdf = str(self.get_invoice_directory(_id=invoice.client.id,filename='invoice_' + str(invoice)+'.pdf') )
-		invoice.save()
-		context = {
+		if self.request.user == invoice.owner: 
+			self.save_pdf(**kwargs)
+			invoice.pdf = str(self.get_invoice_directory(_id=invoice.client.id,filename='invoice_' + str(invoice)+'.pdf') )
+			invoice.save()
+			context = {
 					'invoice': invoice,
 					'pdf' : invoice.pdf,
 					}
-
-		return render(self.request, self.template_name, context)
-
+			return render(self.request, self.template_name, context)
+		raise Http404("Invoice not found")
 
 
 class InvoiceAddView(LoginRequiredMixin,TemplateView):
@@ -180,12 +165,9 @@ class InvoiceAddView(LoginRequiredMixin,TemplateView):
 	def get_context_data(self,**kwargs):
 		context = super().get_context_data(**kwargs)
 		context['invoice_form'] = InvoiceForm()
-		try:
-			context['invoice_form'].fields['client'].queryset =  Client.objects.filter( owner=self.request.user)
-			context['invoice'] = int(str(Invoice.objects.latest('pk'))) + 1
-		except:
-			#context['invoice_form'].fields['client'] = '' 
-			context['invoice'] =  1
+		
+		context['invoice_form'].fields['client'].queryset =  Client.objects.filter( owner=self.request.user)
+
 		return context
 
 
@@ -200,19 +182,15 @@ class InvoiceAddView(LoginRequiredMixin,TemplateView):
 		invoice_type = self.request.POST['invoice_type']
 		invoice_form = InvoiceForm(self.request.POST,user=self.request.user,invoice_type=invoice_type )
 		if  invoice_form.is_valid() :
-			invoice = invoice_form.save(commit=False)
+			invoice = invoice_form.save(commit=False,company=self.request.user.company)
 			invoice.save()
 			messages.success(self.request, 'Invoice is successfully Added')
 			return redirect('invoices')
 		else:
 			context =self.get_context_data(**kwargs)
 			context['invoice_form'] = invoice_form
-			try:
-				context['invoice_form'].fields['client'].queryset =  Client.objects.filter( owner=self.request.user)
-				context['invoice'] = int(str(Invoice.objects.latest('pk'))) + 1
-			except:
-				context['invoice_form'].fields['client'].queryset =  Client.objects.all()
-				context['invoice'] =  1			
+			context['invoice_form'].fields['client'].queryset =  Client.objects.filter( owner=self.request.user)
+	
 		return render(self.request, self.template_name, context)
 
 
@@ -224,18 +202,18 @@ class InvoiceEditView(LoginRequiredMixin,TemplateView):
 		invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
 		context = super().get_context_data(**kwargs)
 		context['invoice_form'] = InvoiceForm(instance=invoice)
-		try:
-			context['invoice_form'].fields['client'].queryset =  Client.objects.filter( owner=self.request.user)
-			context['invoice'] = int(str(Invoice.objects.latest('pk'))) 
-		except:
-			context['invoice_form'].fields['client'].queryset =  Client.objects.all()
+		context['invoice_form'].fields['client'].queryset =  Client.objects.filter( owner=self.request.user)
+
 		
 		return context
 
 
 	def get(self, *args, **kwargs):
-		context = self.get_context_data(**kwargs)
-		return render(self.request, self.template_name, context)
+		invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
+		if self.request.user == invoice.owner: 
+			context = self.get_context_data(**kwargs)
+			return render(self.request, self.template_name, context)
+		raise Http404("Invoice not found")
 
 	def post(self, *args, **kwargs):
 		invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
@@ -256,9 +234,11 @@ class InvoiceDeleteView(LoginRequiredMixin,TemplateView):
 
 	def get(self,  *args, **kwargs):
 		invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
-		invoice.delete()
-		messages.error(self.request, 'Client is successfully deleted')
-		return redirect('invoices')
+		if self.request.user == invoice.owner: 
+			invoice.delete()
+			messages.error(self.request, 'Client is successfully deleted')
+			return redirect('invoices')
+		raise Http404("Invoice not found")
 
 
 class InvoiceEmailView(LoginRequiredMixin,PdfMixin, TemplateView):
@@ -279,8 +259,12 @@ class InvoiceEmailView(LoginRequiredMixin,PdfMixin, TemplateView):
 		return context
 
 	def get(self, *argrs, **kwargs):
-		context = self.get_context_data(**kwargs)
-		return render(self.request, self.template_name, context)
+		invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
+		if self.request.user == invoice.owner: 
+			context = self.get_context_data(**kwargs)
+			return render(self.request, self.template_name, context)
+		raise Http404("Invoice not found")
+		
 
 	def post(self, *argrs, **kwargs):
 		#import pdb; pdb.set_trace()
@@ -381,11 +365,11 @@ class GeneratePdf(TemplateView):
 
 
 	def get(self, request, *args, **kwargs):
-		
-		context = self.get_context_data(**kwargs)
-	
-		pdf = render_to_pdf('invoices/pdf.html', context)
-		return HttpResponse(pdf, content_type='application/pdf')
+		invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
+		if self.request.user == invoice.owner: 
+			context = self.get_context_data(**kwargs)
+			pdf = render_to_pdf('invoices/pdf.html', context)
+			return HttpResponse(pdf, content_type='application/pdf')
 
 
 class InvoicePdfView(LoginRequiredMixin,PdfMixin, TemplateView):

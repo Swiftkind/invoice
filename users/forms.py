@@ -98,6 +98,13 @@ class UserUpdateForm(forms.ModelForm):
 
 
 
+class CompanyUpdateForm(forms.ModelForm):
+	class Meta:
+		model = Company
+		fields = ('company_name', 'logo','province', 'city', 'street')
+
+
+
 class SubUserAddForm(forms.Form):
 	email = forms.EmailField(widget=forms.EmailInput())
 	password = forms.CharField(widget=forms.PasswordInput())
