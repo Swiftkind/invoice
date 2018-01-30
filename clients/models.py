@@ -1,27 +1,28 @@
-from django.db.models import PositiveIntegerField, Model,ForeignKey, CASCADE, EmailField,CharField,DateTimeField, BooleanField, ImageField,TextField
+from django.db import models
 from django.utils import timezone
 from users.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-#from invoices.models import Invoice
+from users.models import Company
 from django.core.validators import MaxLengthValidator,MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import  PermissionsMixin
 
 
-class Client(Model):
+class Client(models.Model):
 
 	
-	owner = ForeignKey(settings.AUTH_USER_MODEL,on_delete=CASCADE, related_name='client', default='')
-	invoiced = BooleanField(default=False) 
-	first_name = CharField(max_length=50)
-	last_name = CharField(max_length=50)
-	display_name = CharField(max_length=100)
-	email = EmailField(max_length=255)
+	owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE, related_name='client', default='')
+	company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
+	invoiced = models.BooleanField(default=False) 
+	first_name = models.CharField(max_length=50)
+	last_name = models.CharField(max_length=50)
+	display_name = models.CharField(max_length=100)
+	email = models.EmailField(max_length=255)
 	mobile = PhoneNumberField(null=True, blank=True)
 
-	date_created = DateTimeField(auto_now_add=True)
-	date_updated = DateTimeField(auto_now=True)
+	date_created = models.DateTimeField(auto_now_add=True)
+	date_updated = models.DateTimeField(auto_now=True)
 
 	
 	class Meta:

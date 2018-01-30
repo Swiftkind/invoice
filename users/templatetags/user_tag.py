@@ -1,5 +1,5 @@
 from django import template
-from users.models import User
+from users.models import User, Company
 from django.conf import settings
 import os
 
@@ -19,7 +19,7 @@ def get_profile_pic(user_id):
 def get_company_logo_pic(user_id):
 
     # get the image
-    user = User.objects.get(pk=user_id)
-    if user.logo:
-        return '{}'.format(user.logo.url)
+    company = Company.objects.get(owner=user_id)
+    if company.logo:
+        return '{}'.format(company.logo.url)
     return '/static/img/default.png'

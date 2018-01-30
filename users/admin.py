@@ -12,7 +12,7 @@ class UserAdmin(BaseUserAdmin):
 	
 	
 	fieldsets= (  (('Login Account'), {'fields':('email', 'password',)}),
-				  (('Profile'), 	  {'fields':('name','avatar','company','logo','country','province','city','street')}),
+				  (('Profile'), 	  {'fields':('name','avatar','company')}),
 				  (('Dates'),         {'fields':('last_login','date_created', 'date_updated')} ),
 				  (('Permissions'),   {'fields': ('is_active', 'is_superuser', 'is_staff')}),
 
