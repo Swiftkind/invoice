@@ -1,0 +1,49 @@
+
+nav.navbar-color {
+	background-color: #e8e6e8;
+}
+
+div.address {
+	margin-left: -15px;
+}
+
+.main {
+	position: relative;
+	top: 52px;
+}
+
+div.invoice{
+	height: 670px;
+	border: 1px solid #1b5a23;
+}
+div.client {
+	height: 670px;
+}
+
+
+
+div.client_form {
+	height: 310px;
+	border: 1px solid #1b5a23;
+
+}
+div.client_list {
+	height: 360px;
+	border: 1px solid #1b5a23;
+}
+
+
+div.scroll {
+	background-color: #00FFFF;
+	background-color: blue;
+	height: 360px;
+	overflow: scroll;
+}
+
+div.add-client-button {
+	position: absolute;
+}
+
+ul.errorlist {
+	color: red;
+}

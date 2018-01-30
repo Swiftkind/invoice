@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content_auth %}
+
+{% for user in users %}
+
+{{user}}</br>
+{% endfor %}
+{% endblock %}

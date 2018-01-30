@@ -1,0 +1,149 @@
+
+{% load staticfiles %}
+{% load user_tag %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+
+<style type="text/css">
+	@page {
+		size: A4;
+		@frame content_frame {
+			left: 50pt;
+			width: 512pt;
+			top: 50pt;
+			height: 750pt;
+			-pdf-frame-border: 1;  
+		}
+
+	}
+
+</style>
+
+<body>
+	<table class="" >
+		
+		<tbody>
+			<tr>
+				<td>
+					<img src="{{ logo }}" width='150px' height="120px" ><br><br>
+					<span style="font-size: 18px; padding-left: -20px;"><b> SWIFTkIND</b></span><br>
+					<span style="font-size: 14px;">province</span><br>
+					<span style="font-size: 14px;">city</span><br>
+					<span style="font-size: 14px;">street</span>
+				</td>
+				<td>
+					<p>&nbsp</p>
+					<h1 style="text-align: right; font-size: 36px;"><b>INVOICE</b></h1>
+					<p style="text-align: right; font-size: 14px;"><b># INV:</b></p>
+					<p style="text-align: right; font-size: 14px;">Balance Due:</p>
+					<p style="text-align: right; font-size: 20px;"><b>PHP</b></p>
+				</td>
+
+			</tr>      
+
+		</tbody>
+	</table>
+	<br>
+	<br>
+	<br>
+	<br>
+	<table class="" >
+		
+		<tbody>
+			<tr>
+				<td>
+
+					<td>
+						<table>
+							<tbody>
+								
+								<td>
+									<p style="text-align: right; font-size: 14px;">Invoice Date:</p>
+									<p style="text-align: right; font-size: 14px;">Due Date:</p>
+								</td>
+
+								<td>
+									<p style="text-align: right; font-size: 14px;">province</p>
+									<p style="text-align: right; font-size: 14px;">city</p>
+									
+								</td>
+							</tbody>
+						</table>
+					</td>
+					
+				</tr>      
+				
+			</tbody>
+		</table>
+
+		<span style="font-size: 14px;">To Michael:</span>
+
+		<br>
+		<br>
+		<br>
+		<br>
+		<table  >
+			<thead style="background-color: red;">
+				<tr style="background-color: red;">
+					
+					<th style="font-size: 14px;">#</th>
+
+					<th style="font-size: 14px;">Description</th>
+
+					<th style="font-size: 14px;">Amount</th>
+					
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><p style="text-align: center; font-size: 14px;">q</p></td>
+					<td><p style="text-align: center; font-size: 14px;">q</p></td>
+					<td><p style="text-align: center; font-size: 14px;">q</p></td>
+					
+				</tr>      
+				
+			</tbody>
+		</table>
+		<br>
+		<br>
+
+		<table class="" >
+
+			<tbody>
+				<tr>
+					<td>
+						
+						<td>
+							<table>
+								<tbody>
+
+									<td>
+										<p style="text-align: right; font-size: 14px;">Total:</p>
+										<p style="text-align: right; font-size: 14px;">Due Amount:</p>
+									</td>
+
+									<td>
+										<p style=" text-align: center; font-size: 14px;">province</p>
+										<p style=" text-align: center; font-size: 14px;">city</p>
+
+									</td>
+								</tbody>
+							</table>
+						</td>
+
+					</tr>      
+
+				</tbody>
+			</table>
+
+			<br>
+			<br>
+			<br>
+
+			<p style=" text-align: center; font-size: 14px;">remarks</p>
+
+		</body>
+		</html>

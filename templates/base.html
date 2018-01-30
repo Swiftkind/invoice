@@ -1,0 +1,80 @@
+{% load staticfiles %}
+{% load user_tag %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Invoice</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Bootstrap Style -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- style -->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">
+
+</head>
+<body>
+	<nav class="navbar navbar-color navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>                        
+				</button>
+				<a class="navbar-brand" href="{% url 'index' %}">INVOICE</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+
+				{% if request.user.is_authenticated %}
+				<ul class="nav navbar-nav navbar-right">
+					<li class="add-subuser-header"><a href="{% url 'index' %}">Home</a></li>
+					<li class="add-subuser-header"><a href="{% url 'clients' %}">Clients</a></li>
+					<li class="add-subuser-header"><a href="{% url 'invoices' %}">Invoices</a></li>
+					<li class="add-subuser-header"><a href="{% url 'subuser_add' request.user.id %}"><span class="glyphicon glyphicon-plus plus"></span>Sub User</a></li>
+
+					<li class="user-name-header"><a href="{% url 'profile' request.user.id %}"><span ><img src="{% get_profile_pic request.user.id %}" width='40px' height="25px" ></span> {{ request.user.email }}</a></li>
+
+
+
+					<li class="user-out-header"><a href="{% url 'signout' %}"><span class="glyphicon glyphicon-log-out"></span> Signout</a></li>
+				</ul>
+
+				{% else %}
+				<ul class="nav navbar-nav navbar-right">
+					<li class="sign-up-header" ><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
+					<li class="sign-in-header" ><a href="{% url 'signin' %}"><span class="glyphicon glyphicon-log-in"></span> Signin</a></li>
+				</ul>
+				{% endif %}
+
+			</div>
+		</div>
+	</nav>
+
+	<div class="main">
+		{% if request.user.is_authenticated %}
+		<div class="col-md-12 content-auth">
+			{% block content_auth %}
+			{% endblock %}
+		</div>
+		{% endif %}
+		{% if not request.user.is_authenticated %}
+		<div class="col-md-12 content-not-auth" >
+			{% block content_not_auth %}
+			{% endblock %}
+		</div>
+		{% endif %}
+
+	</div>
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+	<!-- Bootstrap JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<!-- js -->
+	<script type="text/javascript" src="{% static 'js/custom.js' %}"></script>
+
+</body>
+</html>
