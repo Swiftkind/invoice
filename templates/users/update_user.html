@@ -17,7 +17,7 @@
 			<div class="col-md-12" align='center'>
 				
 				<div class="row">
-					{{form.avatar}}
+					{{user_form.avatar}}
 
 				</div>
 				<br>
@@ -26,29 +26,31 @@
 			<div class="col-md-12">
 				<div class="col-md-3"><label>Username*:</label></div>
 				<div class="col-md-9">
-					<div class="col-md-5">{{form.name|attr:"placeholder:username"}}</div>
-					<div class="col-md-7">{{form.errors.name}}</div>
+					<div class="col-md-5">{{user_form.name|attr:"placeholder:username"}}</div>
+					<div class="col-md-7">{{user_form.errors.name}}</div>
 				</div>
 
 			</div>
 
+
 			<div class="col-md-12">
-				<div class="col-md-3"><label>Company Name*:</label></div>
+				<div class="col-md-3"><label>Company*:</label></div>
 				<div class="col-md-9">
-					<div class="col-md-5">{{form.company|attr:"placeholder:ex. Swiftcompany"}}</div>
-					<div class="col-md-7">{{form.errors.company}}</div>
+					<div class="col-md-5">{{company_form.company_name|attr:"placeholder:ex. Swiftcompany"}}</div>
+					<div class="col-md-7">{{company_form.errors.company_name}}</div>
+				</div>
+
+			</div>
+					<div class="col-md-12">
+				<div class="col-md-3"><label>Email*:</label></div>
+				<div class="col-md-9">
+					<div class="col-md-5">{{user_form.email|attr:"placeholder:ex. swift@company"}}</div>
+					<div class="col-md-7">{{user_form.errors.email}}</div>
 				</div>
 
 			</div>
 			<br>
-			<div class="col-md-12">
-				<div class="col-md-3"><label>Company Email*:</label></div>
-				<div class="col-md-9">
-					<div class="col-md-5">{{form.email|attr:"placeholder:ex. Swiftcompany@gmail.com"}}</div>
-					<div class="col-md-7">{{form.errors.email}}</div>
-				</div>
-
-			</div>
+		
 
 			<br>
 			<div class="col-md-12">
@@ -56,18 +58,18 @@
 				<div class="col-md-9">
 
 					<div class="col-md-12">
-						<div class="col-md-5">{{form.province|attr:"placeholder:Province"}}</div>
-						<div class="col-md-7">{{form.errors.province}}</div> 
+						<div class="col-md-5">{{company_form.province|attr:"placeholder:Province"}}</div>
+						<div class="col-md-7">{{company_form.errors.province}}</div> 
 					</div>
 
 					<div class="col-md-12">
-						<div class="col-md-5">{{form.city|attr:"placeholder:City" }}</div>
-						<div class="col-md-7">{{ form.errors.city }}</div>
+						<div class="col-md-5">{{company_form.city|attr:"placeholder:City" }}</div>
+						<div class="col-md-7">{{ company_form.errors.city }}</div>
 					</div>
 
 					<div class="col-md-12">
-						<div class="col-md-5">{{ form.street|attr:"placeholder:Street"}}</div>
-						<div class="col-md-7">{{form.errors.street}}</div>
+						<div class="col-md-5">{{ company_form.street|attr:"placeholder:Street"}}</div>
+						<div class="col-md-7">{{company_form.errors.street}}</div>
 					</div>
 
 				</div>
@@ -83,7 +85,7 @@
 			<div class="col-md-12" align='center'>
 				
 				<div class="row">
-					{{form.logo}}
+					{{company_form.logo}}
 
 				</div>
 				<br>

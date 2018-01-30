@@ -27,7 +27,7 @@
 	<div class="col-md-12" style="margin-left: 14%;">
 		<br>
 		<div class="col-md-3">
-			<label >Company Name:</label>
+			<label >Company:</label>
 		</div>
 		<div class="col-md-9">
 			{{ user.company }}
@@ -37,7 +37,7 @@
 
 	<div class="col-md-12" style="margin-left: 14%;">
 		<div class="col-md-3">
-			<label >Company Email:</label>
+			<label >Email:</label>
 		</div>
 		<div class="col-md-9">
 			{{ user.email }}
@@ -49,7 +49,7 @@
 			<label >Address:</label>
 		</div>
 		<div class="col-md-9">
-			<div class="fluid">{{ user.street }}, {{ user.city }}, {{ user.province }}, {{ user.country }}</div>
+			<div class="fluid">{{ user.company.street }}, {{ user.company.city }}, {{ user.company.province }}, {{ user.company.country }}</div>
 		</div>
 	</div>
 

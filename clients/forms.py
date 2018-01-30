@@ -55,13 +55,15 @@ class ClientForm(ModelForm):
 				raise ValidationError("mobile already used by other client")
 		return mobile
 
-	def save(self, commit=True):
+	def save(self, commit=True,company=None):
 		#import pdb; pdb.set_trace()
 		instance = super(ClientForm, self).save(commit=False)
 		instance.owner = self.user
+		instance.company = company
+
 		#contact = Client(**self.cleaned_data)
-		if commit:
-			instance.save()
+		
+		instance.save()
 		return instance
 
 

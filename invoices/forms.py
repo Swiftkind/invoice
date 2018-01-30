@@ -122,7 +122,7 @@ class InvoiceForm(ModelForm):
 				raise ValidationError("you pick hourly - hours must have a value")
 		return hours
 
-	def save(self, commit=True):
+	def save(self, commit=True, company=None):
 		instance = super(InvoiceForm, self).save(commit=False)
 		#import pdb; pdb.set_trace()
 		invoice_type = self.cleaned_data.get('invoice_type')
@@ -147,8 +147,10 @@ class InvoiceForm(ModelForm):
 			instance.end_time = end_time
 			instance.total_amount = (hours*rate)
 		instance.owner = self.user
-		if commit:
-			instance.save()
+		print('form company')
+		print(company)
+		instance.company = company
+		instance.save()
 		return instance
 
 
