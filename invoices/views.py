@@ -114,7 +114,7 @@ class MakeInvoiceView(LoginRequiredMixin,TemplateView):
             context['invoice_form'] = invoice_form
             context['invoice_form'].fields['client'].queryset =  Client.objects.filter(company=self.request.user.company)
             context['invoice'] = int(str(Invoice.objects.latest('pk'))) + 1
-         return render(self.request, self.template_name, context)
+        return render(self.request, self.template_name, context)
 
 
 
@@ -129,7 +129,6 @@ class InvoiceListView(LoginRequiredMixin,TemplateView):
         """
         context = super().get_context_data(**kwargs)
         invoices = Invoice.objects.filter( company=self.request.user.company)
-        context['invoices'] = Invoice.objects.filter( company=self.request.user.company)
         query = self.request.GET.get("q")
         if query:
             invoices = invoices.filter(Q(invoice_number__icontains=query,  company=self.request.user.company) )
@@ -194,7 +193,7 @@ class InvoiceAddView(LoginRequiredMixin,TemplateView):
         invoice_type = self.request.POST['invoice_type']
         invoice_form = InvoiceForm(self.request.POST, user=self.request.user, invoice_type=invoice_type )
         if  invoice_form.is_valid() :
-            invoice = invoice_form.save(commit=False)
+            invoice = invoice_form.save(commit=False,company=self.request.user.company)
             invoice.save()
             messages.success(self.request, 'Invoice is successfully Added')
             return redirect('invoices')

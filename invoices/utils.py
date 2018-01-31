@@ -17,4 +17,10 @@ def render_to_pdf(template_src, context_dict={}):
     return None
 
 
+def get_invoice_directory(self, filename):
+    """Upload directory for pdf
+    """
+    return 'invoices/{id}/{pdf}'.format(id=self.id, pdf=filename)
+
+
 
