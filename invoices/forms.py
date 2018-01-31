@@ -5,8 +5,8 @@ from django.conf import settings
 from invoices.models import Invoice
 from clients.models import Client
 
-from datetime import datetime, date 
-
+from datetime import  date 
+import datetime
 
 
 class InvoiceForm(forms.ModelForm):
@@ -41,7 +41,7 @@ class InvoiceForm(forms.ModelForm):
         amount = self.cleaned_data.get('amount')
         if invoice_type == 'fixed':
             if not amount:
-                raise ValidationError("you pick fixed - amount should have a value")
+                raise forms.ValidationError("you pick fixed - amount should have a value")
         return amount
 
 
@@ -52,9 +52,9 @@ class InvoiceForm(forms.ModelForm):
         rate = self.cleaned_data.get('rate')
         if rate:
             if not hours:
-                raise ValidationError("rate has value but doest have an hour/s")
+                raise forms.ValidationError("rate has value but doest have an hour/s")
         if not rate and hours:
-            raise ValidationError("hours has value and rate must have value too")
+            raise forms.ValidationError("hours has value and rate must have value too")
         return rate
 
 
@@ -65,7 +65,7 @@ class InvoiceForm(forms.ModelForm):
         if or_no:
             text_or_no = Invoice.objects.filter(order_number__exact=or_no)
             if text_or_no:
-                raise ValidationError("Order Number already exists:")
+                raise forms.ValidationError("Order Number already exists:")
         return or_no
 
 
@@ -76,7 +76,7 @@ class InvoiceForm(forms.ModelForm):
         if inv_no:
             test_inv_no = Invoice.objects.filter(invoice_number__exact=inv_no)
             if test_inv_no:
-                raise ValidationError("Invoice Number already exists:")                     
+                raise forms.ValidationError("Invoice Number already exists:")                     
         return inv_no   
 
 
@@ -88,7 +88,7 @@ class InvoiceForm(forms.ModelForm):
             in_date = datetime.datetime.strftime( in_date, '%Y-%m-%d')
             current = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d')
             if current > in_date:
-                raise ValidationError("Datetime should be in future")
+                raise forms.ValidationError("Datetime should be in future")
         return in_date
 
 
@@ -100,7 +100,7 @@ class InvoiceForm(forms.ModelForm):
             due_date = datetime.datetime.strftime( due_date, '%Y-%m-%d')
             current = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d')
             if current > due_date:
-                raise ValidationError("Datetime should be in future")
+                raise forms.ValidationError("Datetime should be in future")
         return due_date
 
 
@@ -133,14 +133,14 @@ class InvoiceForm(forms.ModelForm):
                     time_interval = datetime.datetime.combine(date.today(),end_time) - datetime.datetime.combine(date.today(),start_time)
                     time_interval = int(time_interval.seconds/3600)
                     if str(time_interval) != str(hours):
-                        raise ValidationError("hours should equal to the time interval between start_time and end_time")
+                        raise forms.ValidationError("hours should equal to the time interval between start_time and end_time")
             if not hours:
-                raise ValidationError("you pick hourly - hours must have a value")
+                raise forms.ValidationError("you pick hourly - hours must have a value")
         return hours
 
 
 
-    def save(self, commit=True):
+    def save(self, commit=True, company=None):
         """save invoice form
         """
         instance = super(InvoiceForm, self).save(commit=False)
@@ -167,9 +167,10 @@ class InvoiceForm(forms.ModelForm):
             instance.start_time = start_time
             instance.end_time = end_time
             instance.total_amount = (hours*rate)
+
         instance.owner = self.user
-        if commit:
-            instance.save()
+        instance.company = company
+        instance.save()
         return instance
 
 
@@ -190,7 +191,7 @@ class InvoiceEmailForm(forms.Form):
         """
         subject = self.cleaned_data['subject']
         if not subject:
-            raise ValidationError("This is required")
+            raise forms.ValidationError("This is required")
         return subject
 
 
@@ -199,7 +200,7 @@ class InvoiceEmailForm(forms.Form):
         """
         text = self.cleaned_data['text']
         if not text:
-            raise ValidationError("This is required")
+            raise forms.ValidationError("This is required")
         return text
 
 
