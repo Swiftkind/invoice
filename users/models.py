@@ -9,9 +9,11 @@ import os
 
 
 class UserManager(BaseUserManager):
-
+    """Manage user
+    """
     def _create_user(self, email, password, **kwargs):
-
+        """Create user
+        """
         if not email:
             raise ValueError('The given Email must be set')
         email = self.normalize_email(email)
@@ -20,17 +22,19 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
+
     def create_user(self, email, password, **kwargs):
-
-
+        """Set default for user
+        """
         kwargs.setdefault('is_staff', False)
         kwargs.setdefault('is_superuser', False)
-
         kwargs.setdefault('is_active', False)
         return self._create_user(email, password, **kwargs)
 
-    def create_superuser(self, email, password, **kwargs):
 
+    def create_superuser(self, email, password, **kwargs):
+        """Set default for superuser
+        """
         kwargs.setdefault('is_staff', True)
         kwargs.setdefault('is_superuser', True)
         kwargs.setdefault('is_active', True)
@@ -39,85 +43,95 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if kwargs.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
-
         return self._create_user(email, password, **kwargs)
 
 
 
 class Company(models.Model):
+    """Creating company model database
+    """
+    company_name = models.CharField(max_length=255, default='')
+    logo = models.ImageField(upload_to=get_company_directory, null=True, blank=True, default='') 
+    country = models.CharField(max_length=200, default="Philippines")
+    province = models.CharField(max_length=200, default='', null=True, blank=True)
+    city = models.CharField(max_length=200, default='', null=True, blank=True)
+    street = models.CharField(max_length=200, default='', null=True, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name = 'owner_company', default='', null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
-	company_name = models.CharField(max_length=255, default='')
-	logo = models.ImageField(upload_to=get_company_directory,null=True, blank=True, default='') 
-	country = models.CharField(max_length=200, default="Philippines")
-	province = models.CharField(max_length=200, default='', null=True, blank=True)
-	city = models.CharField(max_length=200, default='', null=True, blank=True)
-	street = models.CharField(max_length=200, default='', null=True, blank=True)
 
-	owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, related_name = 'owner_company',default='', null=True)
-	#member = models.ForeignKey(User, on_delete=models.SET_NULL, related_name = 'user_company',default='', null=True)
-
-	date_created = models.DateTimeField(auto_now_add=True)
-	date_updated = models.DateTimeField(auto_now=True)
-
-	def __str__(self):
-		return '{}'.format(self.company_name)
+    def __str__(self):
+        """String representation of the model
+        """
+        return '{}'.format(self.company_name)
 
 
 
 class User(PermissionsMixin,AbstractBaseUser):
-	
-	name = models.CharField(max_length=255, default='')
-	email = models.EmailField(max_length=255, unique=True, default='')
-	avatar = models.ImageField(upload_to=get_user_directory,null=True, blank=True, default='')
+    """Create user model database
+    """
+    name = models.CharField(max_length=255, default='')
+    email = models.EmailField(max_length=255, unique=True, default='')
+    avatar = models.ImageField(upload_to=get_user_directory,null=True, blank=True, default='')
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(_('activate'), default=False)
 
-	company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
+    objects = UserManager()
 
-	date_created = models.DateTimeField(auto_now_add=True)
-	date_updated = models.DateTimeField(auto_now=True)
+    USERNAME_FIELD = 'email'
 
-	is_superuser = models.BooleanField(default=False)
-	is_staff = models.BooleanField(default=False)
-	is_active = models.BooleanField(_('activate'), default=False)
-
-	objects = UserManager()
-
-	USERNAME_FIELD = 'email'
-	#REQUIRED_FIELDS = ['email']
-
-	_avatar = None
+    _avatar = None
 
 
-	class Meta:
-		verbose_name = _('user')
-		verbose_name_plural = _('users')
+    class Meta:
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
 
-	def __init__(self, *args, **kwargs):
-		super(User, self).__init__(*args, **kwargs)
-		self._avatar = self.avatar
 
-	def __str__(self):
-		return '{}'.format(self.name)
+    def __init__(self, *args, **kwargs):
+        """Avatar setup
+        """
+        super(User, self).__init__(*args, **kwargs)
+        self._avatar = self.avatar
 
-	def save(self, *args, **kwargs):
-		if self.avatar != self._avatar and self._avatar != '':
-			self.delete_avatar()
-		return super(User, self).save(*args, **kwargs)
-		self._avatar = self.avatar
 
-	def delete_avatar(self, empty_image=False):
-		image_path = os.path.join(settings.MEDIA_ROOT, str(self._avatar))
+    def __str__(self):
+        """String representation of the model
+        """
+        return '{}'.format(self.name)
 
-		try:
-			os.remove(image_path)
-		except Exception as e:
-			pass
 
-		if empty_image:
-			self.avatar = ''
+    def save(self, *args, **kwargs):
+        """Save user dealing with avatar
+        """
+        if self.avatar != self._avatar and self._avatar != '':
+            self.delete_avatar()
+        return super(User, self).save(*args, **kwargs)
+        self._avatar = self.avatar
 
-	def clean(self):
-		super(User, self).clean()
-		self.email = self.__class__.objects.normalize_email(self.email)
+
+    def delete_avatar(self, empty_image=False):
+        """Delete function avatar
+        """
+        image_path = os.path.join(settings.MEDIA_ROOT, str(self._avatar))
+        try:
+            os.remove(image_path)
+        except Exception as e:
+            pass
+        if empty_image:
+            self.avatar = ''
+
+
+    def clean(self):
+        """Clean email
+        """
+        super(User, self).clean()
+        self.email = self.__class__.objects.normalize_email(self.email)
 
 
 
