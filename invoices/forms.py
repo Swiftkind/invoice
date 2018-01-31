@@ -21,7 +21,8 @@ class InvoiceForm(forms.ModelForm):
 
     class Meta:
         model = Invoice
-        fields = ('invoice_number','hours','start_time','end_time','invoice_type','due_date','client','order_number','invoice_date','rate','amount','paid','remarks')
+        fields = ('amount', 'client', 'due_date', 'end_time', 'hours', 'invoice_number', 'invoice_type', 'invoice_date',
+                  'order_number', 'paid', 'rate', 'remarks', 'start_time')
 
 
     def __init__(self,*args, **kwargs):
