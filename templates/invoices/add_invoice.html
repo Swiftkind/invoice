@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content_auth %}
+
+{{ invoice_form.non_field_errors }}
+<form method="POST" id="client-form-id" novalidate>
+  {% csrf_token %}
+  
+  <div>
+    <h4>New Invoice</h4><hr>
+   
+
+    <div class="col-md-12">
+      <div class="col-md-2">
+        <label >Client Name*:</label>
+      </div>
+      <div class="col-md-10">
+        <div class="col-md-12">
+          <div class="col-md-2">{{ invoice_form.client }}</div>
+          <div class="col-md-5">{{ invoice_form.client.errors.as_text }}</div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="col-md-12">
+      <div class="col-md-2">
+        <label >Item *:</label>
+      </div>
+      <div class="col-md-10">
+        <div class="col-md-12">
+          <div class="col-md-3">{{ invoice_form.item|attr:"placeholder:Order No." }}</div>
+          <div class="col-md-5">{{ invoice_form.item.errors.as_text }}</div>
+        </div>
+      </div>
+    </div>
+     <div class="col-md-12">
+      <div class="col-md-2">
+        <label >Invoice number*:</label>
+      </div>
+      <div class="col-md-10">
+        <div class="col-md-12">
+          <div class="col-md-3">{{ invoice_form.invoice_number |attr:"placeholder:Invoice #" }}</div>
+          <div class="col-md-5">{{ invoice_form.invoice_number.errors.as_text }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="col-md-2">
+        <label >Invoice Date*:</label>
+      </div>
+      <div class="col-md-10">
+        <div class="col-md-12">
+
+          <div class="col-md-3">  {{ invoice_form.invoice_date|attr:"placeholder: yyyy-mm-dd" }}</div>
+          <div class="col-md-5">{{ invoice_form.invoice_date.errors.as_text }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="col-md-2">
+        <label >Due date*:</label>
+      </div>
+      <div class="col-md-10">
+        <div class="col-md-12">
+          <div class="col-md-3">
+            {{ invoice_form.due_date|attr:"placeholder: yyyy-mm-dd"  }}</div>
+            <div class="col-md-5">{{ invoice_form.due_date.errors.as_text }}</div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="col-md-12">
+        <div class="col-md-2">
+          <label>Remarks</label>
+        </div>
+        <div class="col-md-10">
+          <div class="col-md-12">
+            <div class="col-md-3">
+              {{ invoice_form.remarks|attr:"placeholder:Remarks"}}</div>
+              <div class="col-md-5">{{ invoice_form.remarks.errors.as_text }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <br><hr>
+          <div class="col-md-8"></div>
+          <div class="col-md-4">  
+
+            <button type="" class="btn btn-primary">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save as Draft</button>
+          </div>
+          <br>
+          <hr>
+        </div>
+
+      </div>
+    </form>
+
+    {% endblock %}
