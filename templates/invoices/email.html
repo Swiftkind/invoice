@@ -4,77 +4,62 @@
 
 {{ invoice_form.non_field_errors }}
 <form method="POST" id="client-form-id" novalidate>
-	{% csrf_token %}
-	
-	{{ email_form.non_field_errors }}
+  {% csrf_token %}
+  
+  {{ email_form.non_field_errors }}
 
-	<div class="col-md-12">
-		<div class="col-md-2">
-			<label >Company Email:</label>
-		</div>
-		<div class="col-md-10">
-			<div class="col-md-12">
-				<div class="col-md-2">{{ company_email }}</div>
-			</div>
-		</div>
-	</div>
+  <div class="col-md-12">
+    <div class="col-md-2">
+    <label >User Email:</label>
+    </div>
+    <div class="col-md-10">
+      <div class="col-md-12">
+        <div class="col-md-2">{{ company_email }}</div>
+      </div>
+    </div>
+  </div>
 
-	<div class="col-md-12">
-		<div class="col-md-2">
-			<label >Client Email to send:</label>
-		</div>
-		<div class="col-md-10">
-			<div class="col-md-12">
-				<div class="col-md-2">{{ send_email }}</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-12">
-		<div class="col-md-2">
-			<label >Subject:</label>
-		</div>
-		<div class="col-md-10">
-			<div class="col-md-12">
-				<div class="col-md-2">{{ email_form.subject }}</div>
-				<div class="col-md-5">{{ email_form.errors.subject }}</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-12">
-		<div class="col-md-2">
-			<label >Text:</label>
-		</div>
-		<div class="col-md-10">
-			<div class="col-md-12">
-				<div class="col-md-2">{{ email_form.text }}</div>
-				<div class="col-md-5">{{ email_form.errors.text }}</div>
-			</div>
-		</div>
-	</div>
+  <div class="col-md-12">
+    <div class="col-md-2">
+      <label >Client Email to send:</label>
+    </div>
+    <div class="col-md-10">
+      <div class="col-md-12">
+        <div class="col-md-2">{{ send_email }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <div class="col-md-2">
+      <label >Subject:</label>
+    </div>
+    <div class="col-md-10">
+      <div class="col-md-12">
+        <div class="col-md-2">{{ email_form.subject }}</div>
+        <div class="col-md-5">{{ email_form.subject.errors.as_text }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <div class="col-md-2">
+      <label >Text:</label>
+    </div>
+    <div class="col-md-10">
+      <div class="col-md-12">
+        <div class="col-md-2">{{ email_form.text }}</div>
+        <div class="col-md-5">{{ email_form.text.errors.as_text }}</div>
+      </div>
+    </div>
+  </div>
+    <div align="center" class="col-md-12">
+      <br><hr>
+      <div class="col-md-8"></div>
+      <div class="col-md-4">  
+        <button type="submit" class="btn btn-primary">Send</button>
+      </div>
+      <br>
+      <hr>
+    </div>
+  </form>
 
-	<div class="col-md-12">
-		<div class="col-md-2">
-			<label >Pdf:</label>
-		</div>
-		<div class="col-md-10">
-			<div class="col-md-12">
-
-				<embed src="{{ pdf.url }}" width="100%" height="1200px">
-
-				</div>
-			</div>
-		</div>
-
-		<div class="col-md-12">
-			<br><hr>
-			<div class="col-md-8"></div>
-			<div class="col-md-4">	
-				<button type="submit" class="btn btn-primary">Send</button>
-			</div>
-			<br>
-			<hr>
-		</div>
-
-	</form>
-
-	{% endblock %}
+  {% endblock %}

@@ -7,7 +7,7 @@
   {% csrf_token %}
   
   <div>
-    <h4>Update Invoice</h4><hr>
+    <h4>New Invoice</h4><hr>
    
 
     <div class="col-md-12">
@@ -21,6 +21,7 @@
         </div>
       </div>
     </div>
+ 
     <div class="col-md-12">
       <div class="col-md-2">
         <label >Item *:</label>
@@ -65,8 +66,9 @@
         <div class="col-md-12">
           <div class="col-md-3">
             {{ invoice_form.due_date|attr:"placeholder: yyyy-mm-dd"  }}</div>
-            <div class="col-md-5">{{ invoice_form.due_date.errors.as_text}}</div>
+            <div class="col-md-5">{{ invoice_form.due_date.errors.as_text }}</div>
           </div>
+
 
         </div>
       </div>

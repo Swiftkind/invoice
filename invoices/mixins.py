@@ -1,152 +1,77 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+import os, errno
+
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.mixins import AccessMixin
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import get_template
 
 
 from invoices.models import Invoice
-from reportlab.platypus import Image
-from reportlab.pdfgen import canvas
+
+from datetime import date 
 from io import BytesIO
 from io import StringIO
 from PIL import Image
-from datetime import date 
-import os, errno, io
+from reportlab.platypus import Image
+from reportlab.pdfgen import canvas
+from xhtml2pdf import pisa
+
+
+
+class UserIsOwnerMixin(AccessMixin):
+    """Check ownership request 
+    """
+    def dispatch(self, *args, **kwargs):
+        """ Request ownership check
+        """
+        invoice = get_object_or_404(Invoice, id=kwargs['invoice_id'])
+        if not self.request.user.is_authenticated:
+            return self.handle_no_permission()
+        elif self.request.user != invoice.owner:
+            return redirect('index')
+        return super().dispatch(self.request, *args, **kwargs)
 
 
 
 class PdfMixin(object):
-    """pdf functionality
+    """Generate a pdf
     """
-    def invoice_directory(self,_id, filename):
-        """Directory to save pdf
+    def render_to_pdf_and_view(self, template_src, context_dict={}):
+        """Rendering a html file to pdf
         """
-        directory = '{media}{invoices}/{id}/'.format(media=settings.MEDIA_ROOT,invoices='invoices',id=_id)
+        template = get_template(template_src)
+        html  = template.render(context_dict)
+        result = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+        if not pdf.err:
+            return HttpResponse(result.getvalue(), content_type='application/pdf')
+        return None
+
+    def render_to_pdf_and_save(self, template_src, context_dict={}):
+        """Rendering a html file to pdf
+        """
+        invoice_id = context_dict['invoice_id']
+        template = get_template(template_src)
+        html  = template.render(context_dict)
+        result = BytesIO()
+        pdf_buff = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+        pdf = result.getvalue()
+        pdf_directory = self.invoice_pdf_directory(invoice_id)
+        fs = FileSystemStorage(pdf_directory)
+        pdf_file = f"invoice_{invoice_id}.pdf"
+        with fs.open(pdf_file, "wb") as pdf_save:
+            pdf_save.write(pdf)
+            return f"{pdf_directory}{pdf_file}"
+
+    def invoice_pdf_directory(self,invoice_id):
+        """ Get invoice pdf directory
+        """
+        directory = f"{settings.MEDIA_ROOT}invoices/{invoice_id}/"
         if not os.path.exists(directory):
             try:
                 os.makedirs(directory)
             except OSError as e:
-                if e.errno != errno.EXIST:
-                    raise
-        return '{media}{invoices}/{id}/{pdf}'.format(mdia=settings.MEDIA_ROOT,invoices='invoices',id=_id, pdf=filename)
-
-
-    def get_invoice_directory(self,_id, filename):
-        """Get directory pdf file
-        """
-        return 'invoices/{id}/{pdf}'.format(id=_id, pdf=filename)
-
-
-    def save_pdf(self,  **kwargs):
-        """saving invoice pdf
-        """
-        buff = BytesIO()
-        invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
-        filename= str(self.invoice_directory(_id=invoice.client.id,filename='invoice_' + str(invoice)+'.pdf') )
-        image= str(settings.MEDIA_ROOT) + str(self.request.user.logo ) 
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachement; filename={0}.pdf'.format('invoice_' + str(invoice)+'.pdf')
-        
-        """Creating pdf layout
-        """
-        p = canvas.Canvas(filename)
-        p.drawImage( image, 50,755, width=50, height=60) 
-        p.drawString(50, 735, str(self.request.user.company))
-        p.drawString(50, 715, str(self.request.user.country))
-        p.drawString(50, 735, str(self.request.user.company))
-        p.setFont('Times-Bold', 18)
-        try:
-            p.drawString(50,770, str(self.request.user.company_name) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,755, str(self.request.user.country) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,740, str(self.request.user.province) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,725, str(self.request.user.city) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,710, str(self.request.user.street) )
-        except:
-            p.drawString(10,10,'')
-        p.setFont('Times-Bold', 30)
-        p.drawString(450,770, 'INVOICE')
-        p.setFont('Times-Bold', 18)
-        p.drawString(450,755, '#: '+str(invoice.invoice_number) )
-        p.drawString(450,715, 'Balance Due' )
-
-        if invoice.invoice_type == 'fixed':
-            p.drawString(450,695, str(invoice.amount) )
-        if invoice.invoice_type == 'hourly':
-            p.drawString(450,695, str(invoice.total_amount) )
-
-        p.drawString(400, 675, 'Invoice date: '+str(invoice.invoice_date))
-        p.drawString(400, 655, 'Due date: '+str(invoice.due_date))
-        p.line(480,747,580,747)
-        p.drawString(50,480, str(invoice.client.display_name) )
-        p.drawString(50, 680, 'Type: '+str(invoice.invoice_date))
-        p.drawString(50, 660, 'Type: '+str(invoice.due_date))
-        p.drawString(50, 640, 'Type: '+str(invoice.order_number))
-        p.drawString(50, 620, 'Type: '+str(invoice.invoice_type))
-        p.drawString(50, 600, 'status: '+str(invoice.status))
-        p.drawString(50, 580, 'paid: '+str(invoice.paid))
-        p.drawString(50, 560, 'remarks: '+str(invoice.remarks))
-
-        if invoice.rate:
-            p.drawString(50, 520, 'rate: '+str(invoice.rate))
-        if invoice.amount:
-            p.drawString(50, 500, 'amount: '+str(invoice.amount))
-
-        p.showPage()
-        p.save()
-        pdf = buff.getvalue()
-        buff.close()
-        response.write(pdf)
-        return response
-
-
-    def view_pdf(self,  **kwargs):
-        """View pdf
-        """
-        response = HttpResponse(content_type='application/pdf')
-        invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
-        buff = BytesIO()
-
-        response['Content-Disposition'] = 'attachement; filename={0}.pdf'.format('invoice_' + str(invoice)+'.pdf')
-        
-        """pdf layout
-        """
-        p = canvas.Canvas(buff)
-        p.setFont('Times-Bold', 18)
-        try:
-            p.drawString(50,770, str(self.request.user.company_name) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,755, str(self.request.user.country) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,740, str(self.request.user.province) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,725, str(self.request.user.city) )
-            p.setFont('Times-Bold', 18)
-            p.drawString(50,710, str(self.request.user.street) )
-        except:
-            p.drawString(10,10,'')
-        p.setFont('Times-Bold', 30)
-        p.drawString(450,770, 'INVOICE')
-        p.setFont('Times-Bold', 18)
-        p.drawString(450,755, '#: '+str(invoice.invoice_number) )
-        p.drawString(50,480, str(invoice.client.display_name) )
-        p.drawString(50, 680, 'Type: '+str(invoice.invoice_date))
-        p.drawString(50, 660, 'Type: '+str(invoice.due_date))
-        p.drawString(50, 640, 'Type: '+str(invoice.order_number))
-        p.drawString(50, 620, 'Type: '+str(invoice.invoice_type))
-        p.drawString(50, 600, 'status: '+str(invoice.status))
-        p.drawString(50, 580, 'paid: '+str(invoice.paid))
-        p.drawString(50, 560, 'remarks: '+str(invoice.remarks))
-        if invoice.rate:
-            p.drawString(50, 520, 'rate: '+str(invoice.rate))
-        if invoice.amount:
-            p.drawString(50, 500, 'amount: '+str(invoice.amount))
-        p.showPage()
-        p.save()
-        pdf = buff.getvalue()
-        buff.close()
-        response.write(pdf)
-        return HttpResponse(response,content_type='application/pdf')
-
+                return HttpResponse("Not found directory")
+        return directory
