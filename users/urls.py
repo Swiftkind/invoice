@@ -13,6 +13,8 @@ urlpatterns = [
     path('signout/', views.SignoutView.as_view(), name='signout'),
     path('user/profile/<int:user_id>/', views.UserProfileView.as_view(), name='profile'),
     path('user/update/<int:user_id>/', views.UserUpdateView.as_view(), name='user_update'),
+    path('user/settings/<int:user_id>/', views.UserSettingView.as_view(), name='user_setting'),
+    path('user/change_password/<int:user_id>/', views.UserChangePassword.as_view(), name='change_password'),
 
     # Reset Password
     path('password_reset/', auth_views.password_reset, name='password_reset'),
