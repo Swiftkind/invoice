@@ -14,6 +14,7 @@ class Client(models.Model):
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
     invoiced = models.BooleanField(default=False) 
     first_name = models.CharField(max_length=50)
+    middle_name = models.CharField(max_length=40, null=True, blank=True)
     last_name = models.CharField(max_length=50)
     display_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=255)
@@ -22,10 +23,8 @@ class Client(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
-    
     class Meta:
         unique_together = (("display_name", "company"),("email","company"),("mobile","company"))
 
-
     def __str__(self):
-        return '{}'.format(self.display_name)
+        return f"{self.display_name}"
