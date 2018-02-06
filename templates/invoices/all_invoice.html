@@ -3,51 +3,51 @@
 
 {% if messages %}
 <div class="alert alert-success alert-dismissable fade in">
-	<ul >
-		{% for message in messages %}
-		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
+  <ul >
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
 
-		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		{% endfor %}
-	</ul>
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {% endfor %}
+  </ul>
 </div>
 {% endif %}
 
-<div class="col-md-12">
-	<div class="col-md-9">
-		<form method='GET' action=''>
-			<input type="text" name="q" placeholder="Search.." value='{{ request.GET.q }}'>
-		</form>
-	</div><div class="col-md-1"><a href="{% url 'invoice_add' %}"><span class="glyphicon glyphicon-plus plus"></span>Invoice</a>
+<div class="col-md-12" >
+
+  <div align="center" class="col-md-12"><h3>Invoice</h3></div>
+  <div class="col-md-12">
+    <table class="table">
+      <thead>
+        <tr>  
+          <td><input type="checkbox" class = "chcktbl" /></td>
+          <th>Invoice #</th>
+          <th>Client name</th>
+          <th>Order #</th>
+          <th>Status</th>
+          <th>Date Created</th>
+
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for invoice in invoices  %}
+        <tr>
+          <td><input type="checkbox" class = "chcktbl" /></td>
+          <td><a href="{% url 'invoice_view' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
+          <td>{{ invoice.client }}</td>
+          <td>{{ invoice.item }}</td>
+          <td>{{  invoice.status}}</td>
+          <td>{{ invoice.date_created }}</td>
+
+          <td><a href="{% url 'invoice_edit' invoice.pk %}">Edit</a></td>
+          <td><a href="{% url 'invoice_delete' invoice.pk %}">Delete</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
-</div>
 
-<table class="table">
-	<thead>
-		<tr>
-			<th>Invoice #</th>
-			<th>Client name</th>
-			<th>Order #</th>
-			<th>Status</th>
-			<th>Date Created</th>
-
-			<th>Edit</th>
-			<th>Delete</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for invoice in invoices  %}
-		<tr>
-			<td><a href="{% url 'invoice_view' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
-			<td>{{ invoice.client }}</td>
-			<td>{{ invoice.order_number }}</td>
-			<td>{{  invoice.status}}</td>
-			<td>{{ invoice.date_created }}</td>
-
-			<td><a href="{% url 'invoice_edit' invoice.pk %}">Edit</a></td>
-			<td><a href="{% url 'invoice_delete' invoice.pk %}">Delete</a></td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
 {% endblock %}
