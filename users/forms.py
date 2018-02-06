@@ -1,105 +1,80 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
-from users.models import User, Company
 from django.conf import settings
+
+
+from users.models import Company, User
 from users.models import get_company_directory
 
 
 
 class SignupForm(forms.ModelForm):
-    """Signup form
-    """
-    email = forms.EmailField(widget=forms.EmailInput())
-    password = forms.CharField(widget=forms.PasswordInput())
-    confirm_password = forms.CharField(widget=forms.PasswordInput())
+    email = forms.EmailField(widget=forms.EmailInput)
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'confirm_password', 'name', 'avatar')
+        fields = ('email', 'confirm_password', 'first_name', 'last_name', 'middle_name', 'password')
 
+    def __init__(self, *args, **kwargs):
+        super(SignupForm, self).__init__(*args, **kwargs)
+        self.user = kwargs.pop('user', '')
+        self.initial['email'] = ''
 
     def clean_confirm_password(self):
-        """Confirm password checking
-        """
         cleaned_data = super(SignupForm, self).clean()
-        password = self.cleaned_data['password']
-        confirm_password = self.cleaned_data['confirm_password']
+        password = self.data.get('password')
+        confirm_password = self.data.get('confirm_password')
         if password != confirm_password:
             raise forms.ValidationError("password did not match")
         return confirm_password
 
-
-    def save(self, commit=True):
-        """Create user
-        """
+    def save(self, commit=False):
         instance = super(SignupForm, self).save(commit=False)
-        instance.set_password(self.cleaned_data['password'])
-        instance.save()
+        instance.set_password(self.data.get('password'))
+        if commit:
+            instance.save()
         return instance
 
 
 
 class CompanyForm(forms.ModelForm):
-    """Company data form
-    """
     class Meta:
         model = Company
-        fields = ('company_name', 'city', 'logo', 'province', 'street')
-
-
-    def save(self,commit=True):
-        instance = super(CompanyForm, self).save(commit=False)
-        instance.save()
-        return instance
+        fields = ('city', 'logo', 'name', 'province','street')
 
 
 
 class SigninForm(forms.Form):
-    """User signin form
-    """
-    email = forms.EmailField(widget=forms.EmailInput())
-    password = forms.CharField(widget=forms.PasswordInput())
-
+    email = forms.CharField(max_length=30, widget=forms.TextInput)
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput)
+    error_msg = "Email/Password is incorrect."
 
     def clean(self):
-        """Get sign form data and authenticate
+        """ validate user's credentials
         """
-        cleaned_data = super(SigninForm, self).clean()
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
-        self.auth = authenticate(email=email, password=password)
-        if not self.auth:
-            raise forms.ValidationError("Wrong Email or Password")
-        else:
-            self.user = self.auth
+        if not (email or password):
+            raise forms.ValidationError(self.error_msg, code='invalid_login')
+        # check if user's credentials are valid
+        self.user_cache = authenticate(email=email, password=password)
+        if self.user_cache is None or \
+            not self.user_cache.is_active:
+            raise forms.ValidationError(self.error_msg, code='invalid_login')
         return self.cleaned_data
 
 
 
 class UserUpdateForm(forms.ModelForm):
-    """User update form
-    """
+
     class Meta:
         model = User
-        fields = ('avatar', 'email', 'name')
+        fields = ('avatar', 'email', 'first_name', 'middle_name', 'last_name')
 
+    def clean_avatar(self):
+        return self.cleaned_data['avatar']
 
-
-class SubUserAddForm(forms.Form):
-    """Subuser form
-    """
-    email = forms.EmailField(widget=forms.EmailInput())
-    password = forms.CharField(widget=forms.PasswordInput())
-    confirm_password = forms.CharField(widget=forms.PasswordInput())
-
-
-    def clean_confirm_password(self):
-        """Confirm password checking
-        """
-        cleaned_data = super(SubUserAddForm, self).clean()
-        password = self.cleaned_data['password']
-        confirm_password = self.cleaned_data['confirm_password']
-        if password != confirm_password:
-            raise forms.ValidationError("password did not match")
-        return confirm_password
