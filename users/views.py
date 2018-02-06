@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from django.views import View
 
 
-from users.forms import CompanyForm, UserUpdateForm, SigninForm, SignupForm
+from users.forms import CompanyForm, UserChangePasswordForm, UserUpdateForm, SigninForm, SignupForm
 from users.mixins import UserIsOwnerMixin
 from users.models import Company, User 
 
@@ -131,4 +131,39 @@ class UserUpdateView(UserIsOwnerMixin, TemplateView):
 
 
 
+class UserSettingView(UserIsOwnerMixin, TemplateView):
+    """ User settings
+    """
+    template_name = 'users/setting.html'
+
+    def get(self, *args, **kwargs):
+        """ View setting
+        """
+        return render(self.request, self.template_name)
+
+
+
+class UserChangePassword(UserIsOwnerMixin, TemplateView):
+    """ User change password
+    """
+    template_name = 'users/change_password.html'
+
+    def get(self, *args, **kwargs):
+        """ Change password form
+        """
+        context =  {}
+        context['form'] = UserChangePasswordForm()
+        return render(self.request, self.template_name, context)
+
+    def post(self, *args, **kwargs):
+        """ Check old and new password match
+        """
+        form = UserChangePasswordForm(self.request.POST, user=self.request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+        else:
+            context = {}
+            context['form'] = UserChangePasswordForm(self.request.POST, user=self.request.user)
+            return render(self.request, self.template_name, context)
 
