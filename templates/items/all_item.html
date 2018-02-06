@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content_auth %}
+
+{% if messages %}
+<div class="alert alert-success alert-dismissable fade in">
+    <ul >
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
+
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<br>
+
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>order#</th>
+            <th>description</th>
+            <th>order_type</th>
+            <th>Date Created</th>
+            
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+
+            <td><a href="{% url 'item_view' item.id %}">{{ item.order_number }}</a></td>
+            
+            <td>{{ item.description }}</td>
+            
+            <td>  {{ item.item_type }}</td>
+
+
+            
+            <td>{{ item.date_created }}</td>
+            
+            <td><a href="{% url 'item_edit' item.id %}">Edit</a></td>
+            <td><a href="{% url 'item_delete' item.id %}">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

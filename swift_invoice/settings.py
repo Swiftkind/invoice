@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     #apps
     'users',
     'clients',
+    'items',
     'invoices',
     'widget_tweaks',
 
@@ -143,6 +144,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+
+# Default Image
+DEFAULT_IMAGE = '/static/img/default.png'
+
+# Login
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/'
 
 try:
     from .local import *

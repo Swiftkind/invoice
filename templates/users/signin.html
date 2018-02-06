@@ -3,42 +3,38 @@
 {% block content_not_auth %}
 
 <div class="col-md-4"></div>
-
 <div class="col-md-4 panel panel-default sign-in">
   <div class="panel-body"></div>
   <form method="POST" novalidate>
     {% csrf_token %}
     {{ form.non_field_errors }}
-
     <div class="row">
       <h3  style="text-align: center;"><strong>SIGN-IN</strong></h3><hr>
     </div>
-
     <div class="form-group">
-      <div class="col-md-4"><label>Company Email:</label></div>
+      <div class="col-md-4"><label>Email:</label></div>
       <div class="col-md-8">
-        <div class="col-md-5">{{form.email|attr:"placeholder:ex. Swiftcompany inc."}}</div>
-
+        <div class="col-md-5">{{form.email|attr:"placeholder:ex. Swift@company"}}</div>
+        <div class="col-md-5">{{form.email.errors.as_text}}</div>
       </div>
     </div>
-
     <div class="form-group">
       <div class="col-md-4"><label>Password:</label></div>
       <div class="col-md-8">
         <div class="col-md-5">{{form.password|attr:"placeholder:Password"}}</div>
-
+        <div class="col-md-5">{{form.password.errors.as_text}}</div>
       </div>
     </div>
-
-    <div class="form-group pull-right">
-      <button type="submit" class="btn btn-default">Signin</button>
+    <hr>
+<div align="center">
+<hr>
+   <a href="#"><span>Forgot my password.</span> </a>
+    </div>
+    <div align="center">
+      <button type="submit" class="btn btn-default">Login</button>
     </div>
   </form>
 </div>
 </div>
-
-
 <div class="col-md-4"></div>
-
-
 {% endblock %}

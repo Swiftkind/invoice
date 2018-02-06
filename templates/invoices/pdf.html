@@ -4,146 +4,184 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
-</head>
+  <title></title>
+  <style type="text/css">
+  @page {
+    size: A4;
+    @frame content_frame {
+      left: 50pt;
+      width: 512pt;
+      top: 50pt;
+      height: 750pt;
+      -pdf-frame-border: 1;  
+    }
 
-<style type="text/css">
-	@page {
-		size: A4;
-		@frame content_frame {
-			left: 50pt;
-			width: 512pt;
-			top: 50pt;
-			height: 750pt;
-			-pdf-frame-border: 1;  
-		}
-
-	}
+  }
 
 </style>
+</head>
+
+
 
 <body>
-	<table class="" >
-		
-		<tbody>
-			<tr>
-				<td>
-					<img src="{{ logo }}" width='150px' height="120px" ><br><br>
-					<span style="font-size: 18px; padding-left: -20px;"><b> SWIFTkIND</b></span><br>
-					<span style="font-size: 14px;">province</span><br>
-					<span style="font-size: 14px;">city</span><br>
-					<span style="font-size: 14px;">street</span>
-				</td>
-				<td>
-					<p>&nbsp</p>
-					<h1 style="text-align: right; font-size: 36px;"><b>INVOICE</b></h1>
-					<p style="text-align: right; font-size: 14px;"><b># INV:</b></p>
-					<p style="text-align: right; font-size: 14px;">Balance Due:</p>
-					<p style="text-align: right; font-size: 20px;"><b>PHP</b></p>
-				</td>
+  <table >
 
-			</tr>      
+    <tbody>
+      <tr>
+        <td>
+          <img src="{{ logo }}" width='150px' height="120px" ><br><br>
 
-		</tbody>
-	</table>
-	<br>
-	<br>
-	<br>
-	<br>
-	<table class="" >
-		
-		<tbody>
-			<tr>
-				<td>
+          <span><b> {{ invoice.company.name }}</b></span><br>
+        }
+        </td>
+        <td>
+          <span>&nbsp</span>
+          <span>><b>INVOICE</b></span>
+          <span><b>INV#:{{ invoice.invoice_number }}</b></span>
+          <span>Balance Due:{{ invoice. }}</span>
+          <span><b>PHP</b></span>
+        </td>
 
-					<td>
-						<table>
-							<tbody>
-								
-								<td>
-									<p style="text-align: right; font-size: 14px;">Invoice Date:</p>
-									<p style="text-align: right; font-size: 14px;">Due Date:</p>
-								</td>
+      </tr>      
 
-								<td>
-									<p style="text-align: right; font-size: 14px;">province</p>
-									<p style="text-align: right; font-size: 14px;">city</p>
-									
-								</td>
-							</tbody>
-						</table>
-					</td>
-					
-				</tr>      
-				
-			</tbody>
-		</table>
+    </tbody>
+  </table>
+  <br>
+  <br>
+  <br>
+  <br>
+  <table >
 
-		<span style="font-size: 14px;">To Michael:</span>
+    <tbody>
+      <tr>
+        <td>
 
-		<br>
-		<br>
-		<br>
-		<br>
-		<table  >
-			<thead style="background-color: red;">
-				<tr style="background-color: red;">
-					
-					<th style="font-size: 14px;">#</th>
+          <td>
+            <table>
+              <tbody>
 
-					<th style="font-size: 14px;">Description</th>
+                <td>
+                  <span >Invoice Date:</span>
+                  <span >Due Date:</span>
+                </td>
 
-					<th style="font-size: 14px;">Amount</th>
-					
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><p style="text-align: center; font-size: 14px;">q</p></td>
-					<td><p style="text-align: center; font-size: 14px;">q</p></td>
-					<td><p style="text-align: center; font-size: 14px;">q</p></td>
-					
-				</tr>      
-				
-			</tbody>
-		</table>
-		<br>
-		<br>
+                <td>
+                  <span>{{ invoice.invoice_date }}</span>
+                  <span>{{invoice.due_date}}</span>
 
-		<table class="" >
+                </td>
+              </tbody>
+            </table>
+          </td>
 
-			<tbody>
-				<tr>
-					<td>
-						
-						<td>
-							<table>
-								<tbody>
+        </tr>      
 
-									<td>
-										<p style="text-align: right; font-size: 14px;">Total:</p>
-										<p style="text-align: right; font-size: 14px;">Due Amount:</p>
-									</td>
+      </tbody>
+    </table>
 
-									<td>
-										<p style=" text-align: center; font-size: 14px;">province</p>
-										<p style=" text-align: center; font-size: 14px;">city</p>
+    <span>To: {{invoice.client.display_name}}:</span>
 
-									</td>
-								</tbody>
-							</table>
-						</td>
+    <br>
+    <br>
+    <br>
+    <br>
 
-					</tr>      
+    {% if invoice.item.item_type == 'fixed' %}
 
-				</tbody>
-			</table>
+    <table  >
+      <thead >
+        <tr >
 
-			<br>
-			<br>
-			<br>
+          <th >#</th>
 
-			<p style=" text-align: center; font-size: 14px;">remarks</p>
+          <th >Description</th>
+          <th >duration</th>
 
-		</body>
-		</html>
+          <th >Amount</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span>1</span></td>
+          <td><span>{{invoice.item.description}}</span></td>
+          <td><span>{{invoice.item.start_date}}-{{invoice.item.end_date}}</span></td>
+          <td><span>{{invoice.item.amount}}</span></td>
+
+        </tr>      
+
+      </tbody>
+    </table>
+    {%  endif %}
+
+    {% if invoice.item.item_type == 'hourly' %}
+    <table  >
+      <thead>
+        <tr >
+
+          <th >#</th>
+
+          <th >Description</th>
+          <th >duration</th>
+
+          <th >rate</th>
+          <th >hours</th>
+          <th >total_amount</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span>1</span></td>
+          <td><span>{{invoice.description}}</span></td>
+          <td><span>{{invoice.item.start_date}}-{{invoice.item.end_date}}</span></td>
+          <td><span>{{invoice.item.rate}}</span></td>
+          <td><span>{{invoice.item.hours}}</span></td>
+          <td><span>{{invoice.item.total_amount}}</span></td>
+
+
+        </tr>      
+
+      </tbody>
+    </table>
+    {% endif %}
+    <br>
+    <br>
+
+    <table >
+
+      <tbody>
+        <tr>
+          <td>
+
+            <td>
+              <table>
+                <tbody>
+
+                  <td>
+                    <span>Total:</span>
+                    <span>Due Amount:</span>
+                  </td>
+
+                  <td>
+                    <span>PHP</span>
+                    <span>PHP</span>
+
+                  </td>
+                </tbody>
+              </table>
+            </td>
+
+          </tr>      
+
+        </tbody>
+      </table>
+
+      <br>
+      <br>
+      <br>
+
+      <span>{{invoice.remarks}}</span>
+
+    </body>
+    </html>

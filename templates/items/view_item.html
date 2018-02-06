@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content_auth %}
+<div class="col-md-12">
+  <br>
+  <div class="col-md-8"><label>Item Profile</label></div>
+  <div class="col-md-4">                  
+    <a href="{% url 'item_edit' item.id %}" class="btn">Edit</a>
+    <td><a href="{% url 'item_delete' item.id %}">Delete</a></td>
+  </div>
+  <br>
+  <hr>
+</div>
+<div class="col-md-12">
+
+  <div class="col-md-12">
+    <div class="col-md-3">
+      <label >Order #:</label>
+    </div>
+    <div class="col-md-9">
+      {{ item.order_number }}
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <div class="col-md-3">
+      <label >Description</label>
+    </div>
+    <div class="col-md-9">
+      {{ item.description}}
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <div class="col-md-3">
+      <label >Email</label>
+    </div>
+    <div class="col-md-9">
+      {{ client.email }}
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <div class="col-md-3">
+      <label >Mobile</label>
+    </div>
+    <div class="col-md-9">
+      {{ client.mobile }}
+    </div>
+  </div>
+</div>
+{% endblock %}

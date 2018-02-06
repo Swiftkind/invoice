@@ -16,12 +16,10 @@ $(document).ready(function(){
 	});
 
 
-	if ($( "select#id_invoice_type").val() == 'fixed'){
+	if ($( "select#id_item_type").val() == 'fixed'){
 		$('input#id_amount').removeAttr("disabled")
-	}else if($( "select#id_invoice_type").val() == 'hourly'){
-		$('input#id_hours').removeAttr("disabled")
-		$('input#id_start_time').removeAttr("disabled")
-		$('input#id_end_time').removeAttr("disabled")
+	}else if($( "select#id_item_type").val() == 'quantity'){
+		$('input#id_quantity').removeAttr("disabled")
 		$('input#id_rate').removeAttr("disabled")
 
 	}
@@ -29,34 +27,32 @@ $(document).ready(function(){
 
 	
 
-	$( "select#id_invoice_type").click(function(){
+	$( "select#id_item_type").click(function(){
 		var selected = $(this).val();
 
-		if (selected == 'hourly'){
+		if (selected == 'quantity'){
 			
-			$('input#id_hours').removeAttr("disabled")
-			$('input#id_start_time').removeAttr("disabled")
-			$('input#id_end_time').removeAttr("disabled")
+			$('input#id_quantity').removeAttr("disabled")
 			$('input#id_rate').removeAttr("disabled")
 			$('input#id_amount').attr("disabled", "true")
 
 		}
 		if(selected == 'fixed'){
 
-			$('input#id_hours').attr("disabled", "true")
-			$('input#id_start_time').attr("disabled", "true")
-			$('input#id_end_time').attr("disabled", "true")
+			$('input#id_quantity').attr("disabled", "true")
 			$('input#id_rate').attr("disabled", "true")
 			$('input#id_amount').removeAttr("disabled")
-
-
-
 		}
-
-
 	}); 
 
 
+
+$( "select#items").click(function(){
+		var selected = $(this).val();
+
+		$('div#item-pick').append('<span>'+selected+'</span>')
+
+});
 
 
 
