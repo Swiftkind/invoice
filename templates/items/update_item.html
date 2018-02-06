@@ -1,0 +1,88 @@
+
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content_auth %}
+
+{{ form.non_field_errors }}
+
+<form method="POST" id="client-form-id" novalidate>
+  {% csrf_token %}
+
+  <div class="col-md-12">
+
+    <div class="col-md-12" align="center">
+   <h2>Update Item</h2><hr>
+    </div>
+
+    <div class="col-md-12">
+      <div class="col-md-2">
+        <label >Order #*:</label>
+      </div>
+      <div class="col-md-10">
+        <div class="col-md-12">
+          <div class="col-md-3">{{ form.order_number}}</div>
+          <div class="col-md-5">{{ form.order_number.errors.as_text }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="col-md-2">
+        <label >Description*:</label>
+      </div>
+      <div class="col-md-10">
+        <div class="col-md-12">
+          <div class="col-md-3">{{ form.description}}</div>
+          <div class="col-md-5">{{ form.description.errors.as_text }}</div>
+        </div>
+      </div>
+    </div>
+
+      <div class="col-md-12">
+        <div class="col-md-2">
+        <label >Type*:</label>
+        </div>
+        <div class="col-md-10">
+          <div class="col-md-12">
+            <div class="col-md-3">{{ form.item_type}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12">
+        <div class="col-md-2">
+
+        </div>
+        <div class="col-md-10">
+          <div class="col-md-12">
+            <div class=="col-md-6">
+              <div class="col-md-3">
+                {{ form.amount|attr:"placeholder:Amount"|attr:"disabled: true"}}
+              </div>
+              <div class="col-md-5">{{ form.amount.errors.as_text }}</div>
+            </div>
+            <div class="col-md-6">
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  {{ form.quantity|attr:"placeholder:Quantity"|attr:"disabled: true"}}
+                </div>
+                <div class="col-md-5">{{ form.quantity.errors.as_text }}</div>
+              </div>
+              <div class="col-md-12">
+                <div class="col-md-3">{{ form.rate|attr:"placeholder:Rate"|attr:"disabled: true"}}</div>
+                <div class="col-md-5">{{ form.rate.errors.as_text }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12" align="center">
+        <hr>
+        <button type="" class="btn btn-primary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+
+      </div>
+
+    </div>
+  </form>
+
+  {% endblock %}
