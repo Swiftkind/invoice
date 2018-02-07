@@ -5,7 +5,7 @@
 
 {{ form.non_field_errors }}
 
-<form method="POST" id="client-form-id" novalidate>
+<form method="POST" id="client-form-id" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
 
   <div class="col-md-12">

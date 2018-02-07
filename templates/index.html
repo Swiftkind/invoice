@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
-
+{% load client_tag %}
 
 
 {% block content_not_auth %}
@@ -33,7 +33,7 @@
       <li>
         <div class="col-md-4 row-title" align="center">Client <span class="caret"></span></div>
         <div class="col-md-3 row-title" align="left">Due date <span class="caret"></span></div>
-        <div class="col-md-2 row-title" align="left">Payment <span class="caret"></span></div>
+        <div class="col-md-2 row-title" align="left">Payment Status <span class="caret"></span></div>
         <div class="col-md-2 row-title" align="left">Amount <span class="caret"></span></div>
       </li>
     </ul>
@@ -47,8 +47,8 @@
       <li class="row-home-dashboard-data">
         <a class="row-data" href="">
           <div class="col-md-4 data" align="left" >
-            <img class="home-dashboard-logo-client-company" src="">
-            <span><b>{{ invoice.client.company.name }}</b></span> |
+            <img class="home-dashboard-logo-client-company img-circle" src="{%  get_client_company_logo invoice.client.id %}">&nbsp&nbsp
+            <span><b>{{ invoice.client.client_company|title }}</b></span> |
             <span>{{ invoice.invoice_number }}</span>
           </div>
           <div class="col-md-3 data" align="left">

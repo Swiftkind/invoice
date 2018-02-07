@@ -100,9 +100,14 @@ input[placeholder=Search]{
   height: 34px;
 }
 
-.user-image{
+.user-image {
   width: 35px;
   height: 35px;
+}
+
+img.home-dashboard-logo-client-company {
+  width: 25px;
+  height: 20px;
 }
 
 li a.user-dropdown {
@@ -148,10 +153,7 @@ div.row-title {
 }
 
 
-img.home-dashboard-logo-client-company{
-  width: 10px;
-  height:10px;
-}
+
 
 nav.navbar-color {
   background-color: #ffffff;

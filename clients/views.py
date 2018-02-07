@@ -65,7 +65,7 @@ class ClientAddView(LoginRequiredMixin,TemplateView):
     def post(self, *args, **kwargs):
         """ Getting the filled form of client
         """
-        form = ClientForm(self.request.POST, company=self.request.user.company)
+        form = ClientForm(self.request.POST, self.request.FILES, company=self.request.user.company)
         if form.is_valid():
             client = form.save(commit=False)
             client.owner = self.request.user
