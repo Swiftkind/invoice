@@ -14,7 +14,7 @@ class Client(models.Model):
     client_company_logo = models.ImageField(upload_to=get_client_company_logo_dir, 
                                             null=True, 
                                             blank=True
-                          )
+                                 )
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -28,10 +28,14 @@ class Client(models.Model):
                               on_delete=models.CASCADE, 
                               related_name='client', 
                               default=''
-            )
+                   )
+    prefix = models.CharField(max_length=10, null=True, blank=True)
 
     class Meta:
         unique_together = (("client_company", "company"),("email","company"),("mobile","company"))
 
     def __str__(self):
         return f"{self.client_company}"
+
+    def get_prefix(self):
+        return self.client_company[:3]
