@@ -75,8 +75,8 @@
 
         {% else %}
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-          <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+          <li><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span>Signup</a></li>
+          <li><a href="{% url 'signin' %}"><span class="glyphicon glyphicon-log-in"></span>Signin</a></li>
         </ul>
         {% endif %}
       </div>
