@@ -26,10 +26,10 @@ class ClientListView(LoginRequiredMixin,TemplateView):
         """displaying the data of clients
         """
         context = {}
-        clients = Client.objects.filter(company=self.request.user.company)
+        clients = Client.objects.filter(company=self.request.user.company).order_by('-date_updated')
         query = self.request.GET.get("q")
         if query:
-            clients = clients.filter(display_name__icontains=query)
+            clients = clients.filter(display_name__icontains=query).order_by('-date_updated')
         context['clients'] =  clients
         return render(self.request, self.template_name, context)
 

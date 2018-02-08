@@ -4,12 +4,13 @@ from django.conf import settings
 
 from clients.utils import get_client_company_logo_dir
 from phonenumber_field.modelfields import PhoneNumberField
-from users.models import User, Company
+from users.models import Company
 
 
 class Client(models.Model):
     """ Create database model for client
     """
+    archive = models.BooleanField(default=False)
     client_company = models.CharField(max_length=100)
     client_company_logo = models.ImageField(upload_to=get_client_company_logo_dir, 
                                             null=True, 
@@ -22,8 +23,7 @@ class Client(models.Model):
     first_name = models.CharField(max_length=50)
     invoiced = models.BooleanField(default=False)
     last_name = models.CharField(max_length=50)
-    middle_name = models.CharField(max_length=40, null=True, blank=True)
-    mobile = PhoneNumberField(null=True, blank=True)
+    mobile = PhoneNumberField()
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, 
                               on_delete=models.CASCADE, 
                               related_name='client', 
@@ -39,3 +39,6 @@ class Client(models.Model):
 
     def get_prefix(self):
         return self.client_company[:3]
+
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"

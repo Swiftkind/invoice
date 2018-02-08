@@ -9,7 +9,7 @@
 {% csrf_token %}
   <div class="col-md-12">
     <div class="col-md-12" align="center">
-      <h2>New Client</h2><hr>
+      <h2>Add Client</h2><hr>
     </div>
     <div class="col-md-12" >
       <div class="col-md-2 ">
@@ -18,15 +18,11 @@
       <div class="col-md-10">
         <div class="col-md-12">
           <div class="col-md-3">{{ form.first_name|attr:"placeholder:First Name"}}</div>
-          <div class="col-md-9">{{ form.errors.first_name }}</div>
-        </div>
-        <div class="col-md-12">
-          <div class="col-md-3">{{ form.middle_name |attr:"placeholder:Middle Name"}}</div>
-          <div class="col-md-9">{{ form.errors.middle_name }}</div>
+          <div class="col-md-9">{{ form.first_name.errors.as_text }}</div>
         </div>
         <div class="col-md-12">
           <div class="col-md-3">{{ form.last_name |attr:"placeholder:Last Name"}}</div>
-          <div class="col-md-9">{{ form.errors.last_name }}</div>
+          <div class="col-md-9">{{ form.last_name.errors.as_text }}</div>
         </div>
       </div>
     </div>
@@ -67,25 +63,24 @@
       <div class="col-md-10">
         <div class="col-md-12">
           <div class="col-md-3">{{ form.email|attr:"placeholder:Email" }}</div>
-          <div class="col-md-9">{{ form.errors.email }}</div>
+          <div class="col-md-9">{{ form.email.errors.as_text }}</div>
         </div>
       </div>
     </div>
     <div class="col-md-12">
       <div class="col-md-2">
-        <label>Mobile Number:</label>
+        <label>Mobile Number*:</label>
       </div>
       <div class="col-md-10">
         <div class="col-md-12">
           <div class="col-md-3">{{ form.mobile |attr:"placeholder:+639XXXXXXXXX" }}</div>
-          <div class="col-md-9">{{ form.errors.mobile }}</div>
+          <div class="col-md-9">{{ form.mobile.errors.as_text }}</div>
         </div>
       </div>
     </div>
     <div class="col-md-12" align="center">
       <hr>
-      <button type="" class="btn btn-primary">Cancel</button>
-      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="submit" class="btn btn-primary">Add Client</button>
     </div>
   </div>
 </form>

@@ -1,30 +1,35 @@
 {% extends 'base.html' %}
+{% load client_tag %}
 
 {% block content_auth %}
 
-{% if messages %}
-<div class="alert alert-success alert-dismissable fade in">
-  <ul >
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
-
-    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
+  {% if messages %}
+  <div class="alert alert-success alert-dismissable fade in">
+    <ul >
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
 <br>
+
+
+<div align="center"><a href="{% url 'client_add' %}">ADD</a></div>
+<br>
+
 
 <table class="table">
   <thead>
     <tr>
-
-      <th>NAME</th>
-      <th>EMAIL</th>
-      <th>Invoice</th>
+      <th>Company</th>
+      <th>Email</th>
+      <th>Full Name</th>
+      <th>Mobile</th>
       <th>Date Created</th>
-      
+      <th>Invoice</th>
       <th>Edit</th>
       <th>Delete</th>
     </tr>
@@ -32,23 +37,16 @@
   <tbody>
     {% for client in clients %}
     <tr>
-
-      <td><a href="{% url 'client_view' client.id %}">{{ client.display_name }}</a></td>
-      
-      <td>{{ client.email }}</td>
-      
-      <td> 
-
-
-        <a href="{% url 'make_invoice' client.pk %}">make an invoice</a>
-        
-        
+      <td>
+        <img class="home-dashboard-logo-client-company img-circle" src="{% get_client_company_logo client.id %}">
+        &nbsp&nbsp
+        <span><b>{{ client.client_company|title }}</b></span>
       </td>
-
-
-      
-      <td>{{ client.date_created }}</td>
-      
+      <td>{{ client.email }}</td>
+      <td>{{ client.full_name|title }}</td>
+      <td>{{ client.mobile }}</td>
+      <td>{{ client.date_created|date:"F d, Y" }}</td>
+      <td><a href="{% url 'make_invoice' client.pk %}">make an invoice</a></td>
       <td><a href="{% url 'client_edit' client.id %}">Edit</a></td>
       <td><a href="{% url 'client_delete' client.id %}">Delete</a></td>
     </tr>

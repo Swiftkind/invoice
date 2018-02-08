@@ -12,8 +12,7 @@ class ClientForm(forms.ModelForm):
                   'email', 
                   'first_name', 
                   'last_name', 
-                  'mobile', 
-                  'middle_name', 
+                  'mobile',
                   )
 
     def __init__(self,*args, **kwargs):
@@ -47,4 +46,17 @@ class ClientForm(forms.ModelForm):
             if mobile_q.exists():
                 raise forms.ValidationError("Mobile already exists:")
         return mobile
+
+    def clean_email(self):
+        """For unique validation in email
+        """
+        email = self.cleaned_data['email']
+        email_q = Client.objects.filter(email__exact=email, company=self.company)
+        if not self.instance:
+            if email_q:
+                raise forms.ValidationError("Email already exists:")
+        if self.instance.email != email:
+            if email_q.exists():
+                raise forms.ValidationError("email already exists:")
+        return email
 
