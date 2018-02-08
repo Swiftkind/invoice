@@ -44,6 +44,9 @@ class Invoice(models.Model):
     def __str__(self):
         return f"{self.invoice_number}"
 
+    def get_invoice_number(self):
+        return f"{self.invoice_number}".zfill(9)
+
 
 
 
