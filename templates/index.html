@@ -45,11 +45,18 @@
     {% for invoice in invoices %}
     <ul>
       <li class="row-home-dashboard-data">
-        <a class="row-data" href="">
+        <a class="row-data" href="{% url 'invoice_view' invoice.id %}">
           <div class="col-md-4 data" align="left" >
             <img class="home-dashboard-logo-client-company img-circle" src="{%  get_client_company_logo invoice.client.id %}">&nbsp&nbsp
             <span><b>{{ invoice.client.client_company|title }}</b></span> |
-            <span>{{ invoice.invoice_number }}</span>
+            <span>
+              {% if invoice.client.prefix %}
+                {{ invoice.client.prefix|upper }}
+              {% else %}
+                {{ invoice.client.get_prefix|upper }}
+              {% endif %}
+              - {{ invoice.get_invoice_number }}
+            </span>
           </div>
           <div class="col-md-3 data" align="left">
             {% if invoice.status == 'sent' %}
