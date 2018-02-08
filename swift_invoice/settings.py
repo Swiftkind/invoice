@@ -149,8 +149,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 DEFAULT_IMAGE = '/static/img/default.png'
 
 # Login
-LOGIN_URL = '/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/signin/'
+LOGIN_REDIRECT_URL = '/signin/'
 
 try:
     from .local import *
