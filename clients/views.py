@@ -16,7 +16,6 @@ from invoices.models import Invoice
 from io import BytesIO
 
 
-
 class ClientListView(LoginRequiredMixin,TemplateView):
     """ Display list of clients under by company
     """
@@ -26,13 +25,12 @@ class ClientListView(LoginRequiredMixin,TemplateView):
         """displaying the data of clients
         """
         context = {}
-        clients = Client.objects.filter(company=self.request.user.company).order_by('-date_updated')
+        clients = Client.objects.filter(company=self.request.user.company, archive=False).order_by('-date_updated')
         query = self.request.GET.get("q")
         if query:
-            clients = clients.filter(display_name__icontains=query).order_by('-date_updated')
+            clients = clients.filter(display_name__icontains=query, archive=False).order_by('-date_updated')
         context['clients'] =  clients
         return render(self.request, self.template_name, context)
-
 
 
 class ClientView(UserIsOwnerMixin,TemplateView):
@@ -47,7 +45,6 @@ class ClientView(UserIsOwnerMixin,TemplateView):
         context['client'] = get_object_or_404(Client, id=kwargs['client_id'])
         context['invoices'] = Invoice.objects.filter(client=kwargs['client_id'])
         return render(self.request, self.template_name, context)
-
 
 
 class ClientAddView(LoginRequiredMixin,TemplateView):
@@ -77,7 +74,6 @@ class ClientAddView(LoginRequiredMixin,TemplateView):
             context = {}
             context['form'] = form
             return render(self.request, self.template_name, context=context)
-
 
 
 class ClientEditView(UserIsOwnerMixin,TemplateView):
@@ -112,7 +108,6 @@ class ClientEditView(UserIsOwnerMixin,TemplateView):
             return render(self.request, self.template_name, context=context)
 
 
-
 class ClientDeleteView(UserIsOwnerMixin,View):
     """ View for deleting client
     """
@@ -120,6 +115,7 @@ class ClientDeleteView(UserIsOwnerMixin,View):
         """ Get the client
         """
         client = get_object_or_404(Client, id=kwargs['client_id'])
-        client.delete()
+        client.archive = True
+        client.save()
         messages.success(request, 'Client is successfully deleted')
         return redirect('clients')
