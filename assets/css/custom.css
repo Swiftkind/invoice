@@ -1,49 +1,229 @@
 
 nav.navbar-color {
-	background-color: #e8e6e8;
+  background-color: #e8e6e8;
 }
 
 div.address {
-	margin-left: -15px;
+  margin-left: -15px;
 }
 
 .main {
-	position: relative;
-	top: 52px;
+  position: relative;
+  top: 52px;
 }
 
 div.invoice{
-	height: 670px;
-	border: 1px solid #1b5a23;
+  height: 670px;
+  border: 1px solid #1b5a23;
 }
 div.client {
-	height: 670px;
+  height: 670px;
 }
 
+.navbar-brand{
+  padding-top: 13px;
+  margin-right: 50px;
+  width: 91px;
+  height: 26px;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.3;
+  letter-spacing: normal;
+  text-align: left;
+  color: #222222;
+}
 
+span.Dashboard,
+span.Clients,
+span.Invoices,
+span.user-name {
+  width: 78px;
+  height: 21px;
+  font-family: Roboto;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.31;
+  letter-spacing: normal;
+  text-align: left;
+  color: #7f8fa6;
+}
 
 div.client_form {
-	height: 310px;
-	border: 1px solid #1b5a23;
+  height: 310px;
+  border: 1px solid #1b5a23;
 
 }
 div.client_list {
-	height: 360px;
-	border: 1px solid #1b5a23;
+  height: 360px;
+  border: 1px solid #1b5a23;
 }
 
 
 div.scroll {
-	background-color: #00FFFF;
-	background-color: blue;
-	height: 360px;
-	overflow: scroll;
+  background-color: #00FFFF;
+  background-color: blue;
+  height: 360px;
+  overflow: scroll;
 }
 
 div.add-client-button {
-	position: absolute;
+  position: absolute;
 }
 
 ul.errorlist {
-	color: red;
+  color: red;
 }
+
+.btn-search{
+  color: #6b46ef;
+  background-color: #fff;
+  border-color: #ccc;
+  border-style: none;
+}
+
+input[placeholder=Search]{
+  color: #e0e0e0;
+  font-size: 12px;
+
+}
+.form-control-search{
+  border-style: none;
+  padding-top: 6px;
+  padding-right: 12px;
+  padding-bottom: 6px;
+  padding-left: 12px;
+  height: 34px;
+}
+
+.user-image {
+  width: 35px;
+  height: 35px;
+}
+
+img.home-dashboard-logo-client-company {
+  width: 25px;
+  height: 20px;
+}
+
+li a.user-dropdown {
+  padding: 10px 5px 5px 5px;
+}
+
+h4.home-dashboard-head{
+  width: 129px;
+  height: 32px;
+  font-family: Roboto;
+  font-size: 24px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  text-align: left;
+  color: #222222;
+
+}
+
+span.invoice-total {
+  width: 100px;
+  height: 19px;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.36;
+  letter-spacing: normal;
+  text-align: left;
+  color: #718093;
+  color: var(--steel);
+}
+
+div.row-title {
+
+  font-family: Roboto;
+  font-size: 12px;
+
+  color: #718093;
+}
+
+nav.navbar-color {
+  background-color: #ffffff;
+}
+
+body {
+  background-color:  rgba(201, 201, 201, 0.15);
+}
+
+li.row-home-dashboard-data {
+  background-color: #ffffff;
+  border-radius: 2px;
+  height: 40px;
+}
+
+li.row-home-dashboard-data:hover {
+  background-color: #7d78ff;
+  border-radius: 2px;
+  height: 40px;
+}
+
+li.row-home-dashboard-data:hover .row-data,
+li.row-home-dashboard-data:hover .sent,
+li.row-home-dashboard-data:hover .draft,
+li.row-home-dashboard-data:hover .amount {
+  color: #fff;
+}
+
+li.row-home-dashboard-data {
+  margin-bottom: 5px;
+}
+
+div.row-home-dashboard-head {
+  margin-bottom: 15px;
+}
+
+div.data {
+  padding: 13px 15px 10px 15px;
+  font-size: 12px;
+  font-family: Roboto;
+
+}
+
+a.row-data {
+  color: #7f8fa6;
+  text-decoration: none;
+}
+
+a.row-data:hover {
+  color:#00A0C6; 
+  text-decoration:none; 
+  cursor:pointer;  
+}
+
+ul {
+  list-style-type: none;
+}
+
+div.home-dashboard-head {
+  padding-left: 6%;
+  padding-bottom: 4%;
+}
+
+span.sent {
+  color: #88e6cd;
+}
+
+span.draft {
+  color: #fcce8e;
+}
+
+span.amount {
+  color: #5d58de;
+}
+
+
