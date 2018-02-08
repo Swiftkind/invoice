@@ -15,6 +15,12 @@
   {% endif %}
 
 <br>
+
+
+<div align="center"><a href="{% url 'client_add' %}">ADD</a></div>
+<br>
+
+
 <table class="table">
   <thead>
     <tr>
@@ -32,7 +38,7 @@
     {% for client in clients %}
     <tr>
       <td>
-        <img class="home-dashboard-logo-client-company img-circle" src="{% get_client_company_logo invoice.client.id %}">
+        <img class="home-dashboard-logo-client-company img-circle" src="{% get_client_company_logo client.id %}">
         &nbsp&nbsp
         <span><b>{{ client.client_company|title }}</b></span>
       </td>
