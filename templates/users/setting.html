@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content_auth %}
+<div>
+    <a href="{% url 'change_password' request.user.id %}"><h4>Change Password</h4></a>
+</div>
+{% endblock %}

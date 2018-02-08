@@ -78,3 +78,44 @@ class UserUpdateForm(forms.ModelForm):
     def clean_avatar(self):
         return self.cleaned_data['avatar']
 
+
+class UserChangePasswordForm(forms.Form):
+    """ Change password form
+    """
+    old_password = forms.CharField(required=True, widget=forms.PasswordInput)
+    new_password = forms.CharField(required=True, widget=forms.PasswordInput)
+    confirm_password = forms.CharField(required=True, widget=forms.PasswordInput)
+
+    def __init__(self,*args, **kwargs):
+        """ User auth password old checking 
+        """
+        self.user = kwargs.pop('user', None)
+        return super(UserChangePasswordForm, self).__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        password = self.cleaned_data.get('old_password')
+        # Validate the old password
+        if not check_password(password, self.user.password):
+            raise forms.ValidationError("Invalid Old Password")
+        return password
+
+    def clean_confirm_password(self):
+        # Check the new password and confirm password
+        new_password = self.cleaned_data.get('new_password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+
+        if new_password != confirm_password:
+            raise forms.ValidationError("Passwords do not match!")
+        return new_password
+
+    def save(self, *args, **kwargs):
+        """ Save new password
+        """
+        # data from the form
+        password = self.cleaned_data.get('new_password')
+
+        # set and save the new password
+        user = User.objects.get(id=self.user.id)
+        user.set_password(password)
+        user.save()
+        return user
