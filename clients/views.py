@@ -29,8 +29,6 @@ class ClientListView(LoginRequiredMixin,TemplateView):
         clients = Client.objects.filter(company=self.request.user.company, 
                                         archive=False
                                  ).order_by('-date_updated')
-        for client in clients:
-            client.invoices = Invoice.objects.filter(client=client)
 
         client_invoices = [Invoice.objects.filter(client=client, 
                                                   company=self.request.user.company
