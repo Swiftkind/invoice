@@ -1,9 +1,10 @@
 import time
 
+from django.core import serializers
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.views import View
@@ -25,12 +26,48 @@ class ClientListView(LoginRequiredMixin,TemplateView):
         """displaying the data of clients
         """
         context = {}
-        clients = Client.objects.filter(company=self.request.user.company, archive=False).order_by('-date_updated')
+        clients = Client.objects.filter(company=self.request.user.company, 
+                                        archive=False
+                                 ).order_by('-date_updated')
+        for client in clients:
+            client.invoices = Invoice.objects.filter(client=client)
+
+        client_invoices = [Invoice.objects.filter(client=client, 
+                                                  company=self.request.user.company
+                                   ) for client in clients]
+
+        invoices = Invoice.objects.filter(company=self.request.user.company)
         query = self.request.GET.get("q")
         if query:
-            clients = clients.filter(display_name__icontains=query, archive=False).order_by('-date_updated')
-        context['clients'] =  clients
+            clients = clients.filter(display_name__icontains=query, 
+                                     archive=False
+                              ).order_by('-date_updated')
+        context['clients'] = clients
+        context['invoices'] = invoices
+        context['client_invoices'] = client_invoices
         return render(self.request, self.template_name, context)
+
+
+class ClientInvoice(View):
+    """
+    """
+    def get(self, *args, **kwargs):
+        client = get_object_or_404(Client, id=kwargs['client_id'])
+
+        invoices = Invoice.objects.filter(client=client,company=self.request.user.company,)
+        data = serializers.serialize('json', invoices)
+        #client_id = serializers.serialize( 'json',client)
+        #return render(self.request, self.template_name, {'invoices': invoices})
+       
+
+        return JsonResponse({'invoices': data,
+                             'prefix': client.prefix,
+                              'get_prefix' : client.get_prefix(),
+                            },
+                              safe = False,
+                              status=200
+                            )
+
 
 
 class ClientView(UserIsOwnerMixin,TemplateView):
