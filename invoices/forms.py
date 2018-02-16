@@ -4,17 +4,20 @@ from django import forms
 from django.conf import settings
 
 
-from invoices.models import Invoice
 from clients.models import Client
 from datetime import  date 
-
+from invoices.models import Invoice, Item
 
 
 class InvoiceForm(forms.ModelForm):
     """invoice form
     """
-    due_date =  forms.DateField(input_formats=settings.DATE_INPUT_FORMATS)
-    invoice_date = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS) 
+    due_date =  forms.DateField(widget=forms.DateInput(attrs={'type':'date'}), 
+                                                       input_formats=settings.DATE_INPUT_FORMATS
+                                             )
+    invoice_date = forms.DateField(widget=forms.DateInput(attrs={'type':'date'}), 
+                                                          input_formats=settings.DATE_INPUT_FORMATS
+                                                )
 
     class Meta:
         model = Invoice
@@ -22,11 +25,10 @@ class InvoiceForm(forms.ModelForm):
                    'due_date',  
                    'invoice_number', 
                    'invoice_date',
-                   'paid', 
                    'remarks',
                    'description', 
                    'payment_status',
-                   'item',
+
                    )
 
     def __init__(self,*args, **kwargs):
@@ -34,7 +36,6 @@ class InvoiceForm(forms.ModelForm):
         """
         self.company = kwargs.pop('company', None)
         return super(InvoiceForm, self).__init__(*args, **kwargs)
-
 
     def clean_invoice_date(self):
         """ Invoice date validation
@@ -60,7 +61,9 @@ class InvoiceForm(forms.ModelForm):
         """ Invoice number unique together validation 
         """
         invoice_number = self.cleaned_data.get('invoice_number')
-        invoice_number_q = Invoice.objects.filter(invoice_number__exact=invoice_number, company=self.company)
+        invoice_number_q = Invoice.objects.filter(invoice_number__exact=invoice_number, 
+                                                  company=self.company
+                                            )
         if not self.instance :
             if invoice_number_q.exists():
                 raise forms.ValidationError("Invoice Number already exists:")
@@ -68,7 +71,6 @@ class InvoiceForm(forms.ModelForm):
             if invoice_number_q.exists():
                 raise forms.ValidationError("Invoice Number already exists:")
         return invoice_number
-
 
 
 class InvoiceEmailForm(forms.Form):
@@ -97,3 +99,13 @@ class InvoiceEmailForm(forms.Form):
         return text
 
 
+class ItemForm(forms.ModelForm):
+    """ Add item form 
+    """
+    class Meta:
+        model = Item
+        fields = ('amount',
+                  'description',
+                  'quantity',
+                  'rate'
+                )
