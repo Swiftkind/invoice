@@ -1,53 +1,297 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 {% block content_auth %}
 
 {% if messages %}
 <div class="alert alert-success alert-dismissable fade in">
   <ul >
     {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
-
-    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     {% endfor %}
   </ul>
 </div>
 {% endif %}
 
-<div class="col-md-12" >
 
+<div class="col-md-3">
   <div align="center" class="col-md-12"><h3>Invoice</h3></div>
-  <div class="col-md-12">
-    <table class="table">
-      <thead>
-        <tr>  
-          <td><input type="checkbox" class = "chcktbl" /></td>
-          <th>Invoice #</th>
-          <th>Client name</th>
-          <th>Order #</th>
-          <th>Status</th>
-          <th>Date Created</th>
+  {% for invoice in invoices  %}
+  <div class="col-md-12 invoice-data" id="{{ invoice.id }}">
+    <div class="col-md-2">
+      <input type="checkbox" class = "chcktbl" /></div>
+    <div class="col-md-10">
+      <div class="col-md-12">{{ invoice.client.client_company }}</div>
+      <div class="col-md-12">{{ invoice.get_invoice_number }}</div>
+       <div class="col-md-12">{{ invoice.due_date }}</div>
+       <div class="col-md-12">{{ invoice.status }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 
-          <th>Edit</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for invoice in invoices  %}
-        <tr>
-          <td><input type="checkbox" class = "chcktbl" /></td>
-          <td><a href="{% url 'invoice_view' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
-          <td>{{ invoice.client }}</td>
-          <td>{{ invoice.item }}</td>
-          <td>{{  invoice.status}}</td>
-          <td>{{ invoice.date_created }}</td>
+<div class="col-md-9 invoice-content">
+  <div class="col-md-12 invoice-box-form" >
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      <div>
+      <h4>New Invoice</h4><hr>
+      <div class="col-md-12" >
+        <div class="col-md-3">
+          <label >Invoice number*:</label>
+        </div>
+        <div class="col-md-9">
+          <div class="col-md-12">
+            <div class="col-md-3">{{ invoice_form.invoice_number |attr:"placeholder:Invoice #" }}</div>
+            <div class="col-md-5">{{ invoice_form.invoice_number.errors.as_text }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12" >
+        <div class="col-md-3">
+          <label >Invoice Description:</label>
+        </div>
+        <div class="col-md-9">
+          <div class="col-md-12">
+            <div class="col-md-3">{{ invoice_form.description |attr:"placeholder:Description" }}</div>
+            <div class="col-md-5">{{ invoice_form.description.errors.as_text }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Client Name*:</label>
+        </div>
+        <div class="col-md-9">
+          <div class="col-md-12">
+            <div class="col-md-3">{{ invoice_form.client }}</div>
+             <div class="col-md-3"><a href="#" id="add-client" data-toggle="modal" data-target="#ClientAddModal">+ Add Client</a></div>
+            <dv class="col-md-5">{{ invoice_form.client.errors.as_text }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 item" >
+        <div class="col-md-12">
+          <label >Item *:</label>
+        </div>
+        <div>
+        <div>
+        <div class="col-md-12">
+            <div>
+             {{ formset.management_form }}
+                   <div class="link-formset">
+                   <table>
+                    <thead>
+                      <tr>
+                        <th class="required">Description</th>
+                        <th class="required">Quantity</th>
+                        <th class="required">Rate</th>
+                        <th class="required">Amount</th>
+                        <th>Delete?</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                     
+                    {% for form in formset %}
+                      <tr class="form-row row1  empty-form" id="item_set-empty">
+                        <td class="field-description">
+                            {{ form.description }}
+                        </td>
+                        <td class="field-quantity">
+                            {{ form.quantity }}
+                        </td>
+                        <td class="field-rate">
+                            {{ form.rate }}
+                        </td>
+                         <td class="field-amount">
+                          {{ form.amount }}
+                        </td>
+                        <td class="delete"></td>
+                      </tr>
+                      <tr class="add-row"><a href="#"></a></tr>
+                      <div>
+                        
+                        {% if form.description.errors %}
+                          <span>[{{ forloop.counter }}]description error: {{ form.description.errors.as_text }} </span><br>
+                        {% endif %}
+                        {% if form.quantity.errors %}
+                          <span>[{{ forloop.counter }}]quantity error: {{ form.quantity.errors.as_text }} </span><br>
+                        {% endif %}
+                        {% if form.rate.errors %}
+                          <span>[{{ forloop.counter }}]rate error: {{ form.rate.errors.as_text }} </span><br>
+                        {% endif %}
+                        {% if form.amount.errors %}
+                          <span>[{{ forloop.counter }}]amount error: {{ form.amount.errors.as_text }} </span><br>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-2">
+          <label >Invoice Date*:</label>
+        </div>
+        <div class="col-md-10">
+          <div class="col-md-12">
 
-          <td><a href="{% url 'invoice_edit' invoice.pk %}">Edit</a></td>
-          <td><a href="{% url 'invoice_delete' invoice.pk %}">Delete</a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+            <div class="col-md-3">  {{ invoice_form.invoice_date|attr:"placeholder: yyyy-mm-dd" }}</div>
+            <div class="col-md-5">{{ invoice_form.invoice_date.errors.as_text }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-2">
+          <label >Due date*:</label>
+        </div>
+        <div class="col-md-10">
+          <div class="col-md-12">
+            <div class="col-md-3">
+              {{ invoice_form.due_date|attr:"placeholder: yyyy-mm-dd"  }}</div>
+              <div class="col-md-5">{{ invoice_form.due_date.errors.as_text }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="col-md-2">
+            <label>Remarks</label>
+          </div>
+          <div class="col-md-10">
+            <div class="col-md-12">
+              <div class="col-md-3">
+                {{ invoice_form.remarks|attr:"placeholder:Remarks"}}</div>
+                <div class="col-md-5">{{ invoice_form.remarks.errors.as_text }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <br><hr>
+            <div class="col-md-8"></div>
+            <div class="col-md-4">  
+              <button type="" class="btn btn-primary">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="save-draft">Save as Draft</button>
+            </div>
+            <br>
+            <hr>
+          </div>
+        </div>
+      </form>
+    <div class="col-md-12 invoice-box"></div>
+    </div>
+
+    <!-- Modal -->
+<div id="ClientAddModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Client</h4>
+      </div>
+      <div class="modal-body">
+        
+      {{ form.non_field_errors }}
+
+      <form method="POST" id="client-form-id" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+        <div class="col-md-12">
+          <div class="col-md-12" >
+            <div class="col-md-2 ">
+              <label  >Primary contact*:</label>
+            </div>
+            <div class="col-md-10">
+              <div class="col-md-12">
+                <div class="col-md-3">{{ client_form.first_name|attr:"placeholder:First Name"}}</div>
+                <div class="col-md-9">{{ client_form.first_name.errors.as_text }}</div>
+              </div>
+              <div class="col-md-12">
+                <div class="col-md-3">{{ client_form.last_name |attr:"placeholder:Last Name"}}</div>
+                <div class="col-md-9">{{ client_form.last_name.errors.as_text }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-2">
+              <label >Company*:</label>
+            </div>
+            <div class="col-md-10">
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  {{ client_form.client_company|attr:"placeholder:Company name"|attr:"value:" }}
+                </div>
+                <div class="col-md-9">
+                  {{ client_form.client_company.errors.as_text }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-2">
+              <label >Company Logo:</label>
+            </div>
+            <div class="col-md-10">
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  {{ client_form.client_company_logo }}
+                </div>
+                <div class="col-md-9">
+                  {{ client_form.client_company_logo.errors.as_text }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-2">
+              <label >Email Address*:</label>
+            </div>
+            <div class="col-md-10">
+              <div class="col-md-12">
+                <div class="col-md-3">{{ client_form.email|attr:"placeholder:Email" }}</div>
+                <div class="col-md-9">{{ client_form.email.errors.as_text }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-2">
+              <label>Mobile Number*:</label>
+            </div>
+            <div class="col-md-10">
+              <div class="col-md-12">
+                <div class="col-md-3">{{ client_form.mobile |attr:"placeholder:+639XXXXXXXXX" }}</div>
+                <div class="col-md-9">{{ client_form.mobile.errors.as_text }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12" align="center">
+            <button type="submit" class="btn btn-primary">Add Client</button>
+          </div>
+        </div>
+      </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 
+  {% endblock  %}
+
+
+{% block js %}
+  <script>
+
+    $('.link-formset').formset({
+        addText: 'add link',
+        deleteText: 'remove'
+    });
+
+</script>
 {% endblock %}
+
+
