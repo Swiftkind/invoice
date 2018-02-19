@@ -22,11 +22,9 @@ class InvoiceForm(forms.ModelForm):
                    'due_date',  
                    'invoice_number', 
                    'invoice_date',
-                   'paid', 
                    'remarks',
                    'description', 
                    'payment_status',
-                   'item',
                    )
 
     def __init__(self,*args, **kwargs):
