@@ -4,53 +4,163 @@
 {% block content_auth %}
 
   {% if messages %}
-  <div class="alert alert-success alert-dismissable fade in">
-    <ul >
-      {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-      {% endfor %}
-    </ul>
-  </div>
+    <div class="alert alert-success alert-dismissable fade in">
+      <ul >
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {% endfor %}
+      </ul>
+    </div>
   {% endif %}
 
-<br>
+  <br>
+  <div align="center"><a href="{% url 'client_add' %}">ADD</a></div>
+  <br>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Email</th>
+        <th>Full Name</th>
+        <th>Mobile</th>
+        <th>Date Created</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+     {% for client in clients %}
+        <tr>
+          <td>
+            <a id="{{ client.id }}"  class="client-invoice row-data" data-toggle="modal" data-target="#invoicesModal">
+            <img class="home-dashboard-logo-client-company img-circle" src="{% get_client_company_logo client.id %}">
+            &nbsp&nbsp
+            <span>
+              <b>{{ client.client_company|title }}</b>
+            </span>
+            </a>
+          </td>
+          <td>{{ client.email }}</td>
+          <td>{{ client.full_name|title }}</td>
+          <td>{{ client.mobile }}</td>
+          <td>{{ client.date_created|date:"F d, Y" }}</td>
+          <td><a href="{% url 'client_edit' client.id %}">Edit</a></td>
+          <td><a href="{% url 'client_delete' client.id %}">Delete</a></td>
+        </tr>
+     {% endfor %}
+    </tbody>
+  </table>
 
+  <!-- Modal -->
+  <div id="invoicesModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Invoices</h4>
+        </div>
+        <div class="modal-body">
+         <div class="col-md-12 row-home-dashboard-head" >
+          <ul>
+            <li>
+              <div class="col-md-3 row-title" align="left">Invoice <span class="caret"></span></div>
+              <div class="col-md-3 row-title" align="left">Due date <span class="caret"></span></div>
+              <div class="col-md-3 row-title" align="left">Payment Status <span class="caret"></span></div>
+              <div class="col-md-3 row-title" align="left">Amount <span class="caret"></span></div>
+            </li>
+          </ul>
+          <br>
+          <div id="invoice-table"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
 
-<div align="center"><a href="{% url 'client_add' %}">ADD</a></div>
-<br>
+{% endblock %}
 
+{% block js %}
+<script>
+  $("a.client-invoice").on('click', function(e) {
+    e.preventDefault();
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Company</th>
-      <th>Email</th>
-      <th>Full Name</th>
-      <th>Mobile</th>
-      <th>Date Created</th>
-      <th>Invoice</th>
-      <th>Edit</th>
-      <th>Delete</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for client in clients %}
-    <tr>
-      <td>
-        <img class="home-dashboard-logo-client-company img-circle" src="{% get_client_company_logo client.id %}">
-        &nbsp&nbsp
-        <span><b>{{ client.client_company|title }}</b></span>
-      </td>
-      <td>{{ client.email }}</td>
-      <td>{{ client.full_name|title }}</td>
-      <td>{{ client.mobile }}</td>
-      <td>{{ client.date_created|date:"F d, Y" }}</td>
-      <td><a href="{% url 'make_invoice' client.pk %}">make an invoice</a></td>
-      <td><a href="{% url 'client_edit' client.id %}">Edit</a></td>
-      <td><a href="{% url 'client_delete' client.id %}">Delete</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    var id = $(this).attr('id').toString();
+
+    $.ajax({
+     method: 'GET',
+     url: "/client/invoice/"+id+"",
+    })
+    .done(function(response){
+      var obj = JSON.parse(response.invoices);
+
+      // Invoices table template
+      var prefix = ''
+      var t_open = '<ul>'
+                  +'<li class="row-home-dashboard-data">'
+                  +'<a class="row-data" href="#">';
+
+      var inv = '<div class="col-md-3 data" align="left" > <span>';
+
+      var inv2 = '</span></div>';
+
+      var due =  '<div class="col-md-3 data" align="left"><span>';
+      var due2 =  '</span></div>'
+      var t_close = '</a></li></ul>';
+      var payment_status = ''
+
+      $('div#invoice-table').empty()
+
+      // Display nested invoice data
+      for (var data in obj) {
+        if (response.prefix == null){
+          prefix = response.get_prefix
+        }else{
+         prefix = response.prefix
+      }
+
+      if (obj[data].fields.payment_status == true ){
+        payment_status = 'Paid'
+      }
+      else if (obj[data].fields.payment_status == false ){
+        payment_status = 'Pending'
+      }
+
+      var template =  t_open
+      +inv
+      +prefix
+      +' - '
+      +obj[data].fields.invoice_number
+      +inv2
+      +due
+      +obj[data].fields.status
+      +' | <span>'+obj[data].fields.due_date+'</span>'
+      +due2
+      +'<div class="col-md-3 data" align="left">'
+      +'<span >'
+      +payment_status
+      +'</span>'
+      +'</div>'
+      +'<div class="col-md-2 data" align="left">'
+      +'<span class="amount">'
+      +'$'
+      +'{% if invoice.item.amount is None %}'
+      +'{{ invoice.item.total_amount }}'
+      +'{% else %}'
+      +'{{ invoice.item.amount }}'
+      +'{% endif %}'
+      +'</span>'
+      +'</div>'
+      +t_close;
+
+      $('div#invoice-table').append(template)
+    }
+  });
+  });
+</script>
 {% endblock %}
