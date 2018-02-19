@@ -2,15 +2,7 @@
 {% load widget_tweaks %}
 {% load client_tag %}
 
-
-{% block content_not_auth %}
-<hr><h1 align="center">Welcome Page</h1><hr>
-{% endblock %}
-
-
-
-
-{% block content_auth %}
+{% block content %}
 {% if messages %}
 <div class="alert alert-success alert-dismissable fade in">
   <ul >
@@ -22,75 +14,241 @@
 </div>
 {% endif %}
 
-
-<div class="home-dashboard">
-  <div class="col-md-12 home-dashboard-head">
-    <h4 class="title-home-dashboard"><b>My invoices</b></h4>
-    <span class="invoice-total">{{ invoices.count }} invoices total</span>
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="main-dashboard">
+        <div class="main-content-header">
+          <h3>My invoices</h3>
+          <p>{{ invoices.count }} invoices total</p>
+        </div>
+        <div class="table-filters row">
+          <div class="col" >
+            <div class="filter-tag d-inline-flex align-items-center">
+              <span>Jun 1, 2017 - Dec 31, 2017</span>
+              <a href="#" class="btn-link align-items-center d-flex justify-content-center cirle ">
+                <i data-feather="x"></i>
+              </a>
+            </div>
+            <div class="filter-tag d-inline-flex align-items-center">
+              <span>Super Company Inc.</span>
+              <a href="#" class="btn-link align-items-center d-flex justify-content-center cirle ">
+                <i data-feather="x"></i>
+              </a>
+            </div>
+            <div class="filter-tag d-inline-flex align-items-center">
+              <span>Paid</span>
+              <a href="#" class="btn-link align-items-center d-flex justify-content-center cirle ">
+                <i data-feather="x"></i>
+              </a>
+            </div>
+            <div class="filter-tag d-inline-flex align-items-center">
+              <span>$0 - $10,000</span>
+              <a href="#" class="btn-link align-items-center d-flex justify-content-center cirle ">
+                <i data-feather="x"></i>
+              </a>
+            </div>
+            <div class="filter-tag d-inline-flex align-items-center">
+              <span>$0 - $10,000</span>
+              <a href="#" class="btn-link align-items-center d-flex justify-content-center cirle ">
+                <i data-feather="x"></i>
+              </a>
+            </div>
+          </div>
+          <div class="col-1 d-flex align-items-center">
+            <div class="clear-filter">
+              <a href="#">Clear Filters</a>
+            </div>
+          </div>
+        </div>
+        <div class="list-invoice-bar d-flex align-items-center justify-content-between">
+          <div class="">
+            <ul class="nav">
+              <li class="">
+                <a href="#" class="d-flex align-items-center btn-icon-left">
+                  <i data-feather="copy"></i>
+                  <span>Duplicate</span>
+                </a>
+              </li>
+              <li class="">
+                <span class="v-divider"></span>
+              </li>
+              <li class="">
+                <a href="#" class="d-flex align-items-center btn-icon-left">
+                  <i data-feather="printer"></i>
+                  <span>Print</span>
+                </a>
+              </li>
+              <li class="">
+                <span class="v-divider"></span>
+              </li>
+              <li class="">
+                <a href="#" class="d-flex align-items-center btn-icon-left">
+                  <i data-feather="download"></i>
+                  <span>Download</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="">
+            <ul class="nav">
+              <li class="d-flex">
+                <span>0 seleted</span>
+              </li>
+              <li class="">
+                <span class="v-divider"></span>
+              </li>
+              <li class="">
+                <a href="#" class="d-flex align-items-center btn-icon-left">
+                  <i class="icon dripicons-scale"></i>
+                  <span>Show Filters</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="list-invoice-client table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>
+                  <label>
+                    <input type="checkbox" name="">
+                  </label>
+                </th>
+                <th>
+                  <a href="#"  class="d-flex align-items-center">
+                    Client 
+                    <i data-feather="chevron-down"></i>
+                  </a>
+                </th>
+                <th>
+                  <a href="#" class="d-flex align-items-center">
+                    Invoice number
+                    <i data-feather="chevron-down"></i>
+                  </a>
+                </th>
+                <th>
+                  <a href="#" class="d-flex align-items-center">
+                    Due date
+                    <i data-feather="chevron-down"></i>
+                  </a>
+                </th>
+                <th>
+                  <a href="#" class="d-flex align-items-center">
+                    Payment Status
+                    <i data-feather="chevron-down"></i>
+                  </a>
+                </th>
+                <th>
+                  <a href="#" class="d-flex align-items-center">
+                    Amount
+                    <i data-feather="chevron-down"></i>
+                  </a>
+                </th>
+                <th>
+                  <p></p>
+                </th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {% for invoice in invoices %}
+              <tr>
+                <td>
+                  <label>
+                    <input type="checkbox" name="">
+                  </label>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm">
+                      <img class="home-dashboard-logo-client-company img-circle" src="{%  get_client_company_logo invoice.client.id %}" width="25px" height="20px">
+                    </div>
+                    <span class="client-name">{{ invoice.client.client_company|title }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span>
+                    {% if invoice.client.prefix %}
+                      {{ invoice.client.prefix|upper }}
+                    {% else %}
+                      {{ invoice.client.get_prefix|upper }}
+                    {% endif %}
+              -       {{ invoice.get_invoice_number }}
+                  </span>
+                </td>
+                <td>
+                   {% if invoice.status == 'sent' %}
+                      <span class="sent">{{ invoice.status|title }} |</span>
+                   {% elif invoice.status == 'draft' %}
+                      <span class="draft">{{ invoice.status|title }} |</span>
+                   {% endif %}
+                      <span>{{ invoice.due_date|date:"F d, Y" }}</span>
+                </td>
+                <td>
+                  <span>
+                    {% if invoice.payment_status %}
+                      Paid
+                    {% else %}
+                      Pending
+                    {% endif %}</span>
+                </td>
+                <td>
+                  <span>
+                    $
+                    {% if invoice.item.amount is None %}
+                      {{ invoice.item.total_amount }}
+                    {% else %}
+                      {{ invoice.item.amount }}
+                    {% endif %}</span>
+                </td>
+                <td>
+                  <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="listInvoiceOptions" data-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
+                      <i data-feather="more-horizontal"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                      <a href="#" class="dropdown-item">Edit</a>
+                      <a href="#" class="dropdown-item">Delete</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+              
+            </tbody>
+          </table>
+        </div>
+        <div class="bottom-pagination">
+          <nav>
+            <ul class="pagination justify-content-center">
+              <li class="page-item">
+                <a href="#" class="page-link">
+                  <span aria-hidden="true">
+                    <i class="icon dripicons-chevron-left"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="page-item">
+                <a href="" class="page-link">2</a>
+              </li>
+              <li class="page-item active">
+                <a href="" class="page-link">3</a>
+              </li>
+              <li class="page-item">
+                <a href="" class="page-link">4</a>
+              </li>
+              <li class="page-item">
+                <a href="#" class="page-link">
+                  <span aria-hidden="true">
+                    <i class="icon dripicons-chevron-right"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col-md-12 row-home-dashboard-head" >
-    <ul>
-      <li>
-        <div class="col-md-4 row-title" align="center">Client <span class="caret"></span></div>
-        <div class="col-md-3 row-title" align="left">Due date <span class="caret"></span></div>
-        <div class="col-md-2 row-title" align="left">Payment Status <span class="caret"></span></div>
-        <div class="col-md-2 row-title" align="left">Amount <span class="caret"></span></div>
-      </li>
-    </ul>
-  </div>
-
-  <div class="col-md-12 ">
-
-
-    {% for invoice in invoices %}
-    <ul>
-      <li class="row-home-dashboard-data">
-        <a class="row-data" href="{% url 'invoice_view' invoice.id %}">
-          <div class="col-md-4 data" align="left" >
-            <img class="home-dashboard-logo-client-company img-circle" src="{%  get_client_company_logo invoice.client.id %}">&nbsp&nbsp
-            <span><b>{{ invoice.client.client_company|title }}</b></span> |
-            <span>
-              {% if invoice.client.prefix %}
-                {{ invoice.client.prefix|upper }}
-              {% else %}
-                {{ invoice.client.get_prefix|upper }}
-              {% endif %}
-              - {{ invoice.get_invoice_number }}
-            </span>
-          </div>
-          <div class="col-md-3 data" align="left">
-            {% if invoice.status == 'sent' %}
-            <span class="sent">{{ invoice.status|title }} |</span>
-            {% elif invoice.status == 'draft' %}
-            <span class="draft">{{ invoice.status|title }} |</span>
-            {% endif %}
-            <span>{{ invoice.due_date|date:"F d, Y" }}</span>
-          </div>
-          <div class="col-md-2 data" align="left">
-            <span >
-              {% if invoice.payment_status %}
-              Paid
-              {% else %}
-              Pending
-              {% endif %}
-            </span>
-          </div>
-          <div class="col-md-2 data" align="left">
-            <span class="amount">
-              $
-              {% if invoice.item.amount is None %}
-              {{ invoice.item.total_amount }}
-              {% else %}
-              {{ invoice.item.amount }}
-              {% endif %}
-
-            </span>
-          </div>
-        </a>
-      </li>
-    </ul>
-    {% endfor %}
-  </div>
-</div>
-
 {% endblock %}

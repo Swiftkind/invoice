@@ -25,10 +25,8 @@ class Invoice(models.Model):
     invoice_number = models.PositiveIntegerField()
     invoice_date = models.DateField()
     due_date = models.DateField()
-    item = models.ForeignKey(Item ,on_delete=models.SET_NULL, null=True) 
     
     status = models.CharField(max_length=10, choices=STATUS, default='draft')
-    paid = models.BooleanField(default=False)
     remarks = models.TextField(max_length=255,null=True, blank=True)
    
     pdf = models.FileField(upload_to=get_invoice_directory,null=True, blank=True)
