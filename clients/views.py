@@ -47,16 +47,13 @@ class ClientListView(LoginRequiredMixin,TemplateView):
 
 
 class ClientInvoice(View):
-    """
+    """ Display invoices of client
     """
     def get(self, *args, **kwargs):
         client = get_object_or_404(Client, id=kwargs['client_id'])
 
         invoices = Invoice.objects.filter(client=client,company=self.request.user.company,)
         data = serializers.serialize('json', invoices)
-        #client_id = serializers.serialize( 'json',client)
-        #return render(self.request, self.template_name, {'invoices': invoices})
-       
 
         return JsonResponse({'invoices': data,
                              'prefix': client.prefix,
