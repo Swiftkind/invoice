@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 from django.conf import settings
+from django.forms import BaseFormSet, formset_factory
 
 
 from clients.models import Client
@@ -14,10 +15,10 @@ class InvoiceForm(forms.ModelForm):
     """
     due_date =  forms.DateField(widget=forms.DateInput(attrs={'type':'date'}), 
                                                        input_formats=settings.DATE_INPUT_FORMATS
-                                             )
+                                                      )
     invoice_date = forms.DateField(widget=forms.DateInput(attrs={'type':'date'}), 
                                                           input_formats=settings.DATE_INPUT_FORMATS
-                                                )
+                                                         )
 
     class Meta:
         model = Invoice
@@ -28,7 +29,6 @@ class InvoiceForm(forms.ModelForm):
                    'remarks',
                    'description', 
                    'payment_status',
-
                    )
 
     def __init__(self,*args, **kwargs):
@@ -104,8 +104,24 @@ class ItemForm(forms.ModelForm):
     """
     class Meta:
         model = Item
-        fields = ('amount',
-                  'description',
+        fields = ('description',
                   'quantity',
                   'rate'
                 )
+
+
+class BaseItemFormSet(BaseFormSet):
+    def clean(self):
+        if any(self.errors):
+            return
+
+        for count,form in enumerate(self.forms):
+            if not form.data['form-'+str(count)+'-description']:
+                print("not description")
+                raise forms.ValidationError("Description is required!")
+            if not form.data['form-'+str(count)+'-quantity']:
+                print("not qty")
+                raise forms.ValidationError("Quantity is required!")
+            if not form.data['form-'+str(count)+'-rate']:
+                print("not rate")
+                raise forms.ValidationError("Rate is required!")
