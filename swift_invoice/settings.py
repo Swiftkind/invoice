@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     #apps
     'users',
     'clients',
-    'items',
     'invoices',
     'widget_tweaks',
 

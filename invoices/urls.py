@@ -8,7 +8,8 @@ from invoices.views import (
     InvoiceDeleteView, 
     InvoiceEmailView, 
     PdfPreview, 
-    MakeInvoiceView
+    MakeInvoiceView,
+    InvoiceAjaxView,
     ) 
 
 
@@ -23,4 +24,6 @@ urlpatterns = [
     path('invoice/pdf/<int:invoice_id>/', PdfPreview.as_view(), name='invoice_pdf'),
     #make invoice for client
     path('clients/make_invoice/<int:client_id>/', MakeInvoiceView.as_view(), name='make_invoice'),
+    #ajax
+    path('invoice/ajax/view/<int:invoice_id>/', InvoiceAjaxView.as_view(), name='invoice_ajax'),
 ]
