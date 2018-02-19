@@ -18,7 +18,7 @@ from clients.forms import ClientForm
 from clients.models import Client
 from invoices.mixins import PdfMixin, UserIsOwnerMixin
 from invoices.models import Invoice, Item
-from invoices.forms import InvoiceForm, InvoiceEmailForm, ItemForm
+from invoices.forms import BaseItemFormSet, ItemForm, InvoiceForm, InvoiceEmailForm
 from users.models import User
 
 from xhtml2pdf import pisa 
@@ -115,36 +115,29 @@ class InvoiceListView(LoginRequiredMixin ,TemplateView):
     def get(self, *args, **kwargs):
         """Display invoices data
         """
-        context = {}
-        invoices = Invoice.objects.filter(company=self.request.user.company)
         query = self.request.GET.get("q")
         if query:
             invoices = invoices.filter(invoice_number__icontains=query)
+        else:
+            invoices = Invoice.objects.filter(company=self.request.user.company)
+        context = {}
+        context['client_form'] = ClientForm()
+        ItemFormSet = formset_factory(ItemForm, formset=BaseItemFormSet)
+        context['formset'] = ItemFormSet()
         context['invoices'] =  invoices 
         context['invoice_form'] = InvoiceForm()
-        context['client_form'] = ClientForm() 
         context['invoice_form'].fields['client'].queryset =  Client.objects.filter(
-                                                                company=self.request.user.company
-                                                                )
-        ItemFormSet = formset_factory(ItemForm)
-        context['formset'] = ItemFormSet()
+                                                                company=self.request.user.company,
+                                                                archive=False
+                                                                ).order_by('-date_updated')
         return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
-        """Get filled invoice form and create
+        """ Get filled invoice form and create
         """
-        ItemFormSet = formset_factory(ItemForm)
+        ItemFormSet = formset_factory(ItemForm, formset=BaseItemFormSet)
         formset = ItemFormSet(self.request.POST)
-        client_form = ClientForm(self.request.POST) 
-        invoice_form = InvoiceForm(self.request.POST)
-        
-        if client_form.is_valid():
-            client = client_form.save(commit=False)
-            client.owner = self.request.user
-            client.company = self.request.user.company
-            client.save()
-            messages.success(self.request, 'Client is successfully added')
-            return redirect('invoices')
+        invoice_form = InvoiceForm(self.request.POST, company=self.request.user.company)
 
         if  invoice_form.is_valid() and formset.is_valid():
             # Save invoice
@@ -153,12 +146,14 @@ class InvoiceListView(LoginRequiredMixin ,TemplateView):
             invoice.company = self.request.user.company
             invoice.save()
 
+            # Check latest item id
             try:
                 latest = Item.objects.latest('id')
                 item_id = latest.id + 1
             except:
                 latest = 0
                 item_id = latest + 1
+
             # Save item/s
             for count,form in enumerate(formset):
                 item_form = ItemForm()
@@ -170,23 +165,23 @@ class InvoiceListView(LoginRequiredMixin ,TemplateView):
                 item.description = form.data['form-'+str(count)+'-description']
                 item.quantity = form.data['form-'+str(count)+'-quantity']
                 item.rate = form.data['form-'+str(count)+'-rate']
-                item.amount =  form.data['form-'+str(count)+'-amount']
+                item.amount = int(item.rate) * int(item.quantity)
                 item.save()
             messages.success(self.request, 'Invoice is successfully Added')
             return redirect('invoices')
         else:
-            
             invoices = Invoice.objects.filter(company=self.request.user.company)
             context = {}
             context['invoices'] =  invoices 
             context['invoice_form'] = invoice_form
             context['invoice_form'].fields['client'].queryset = Client.objects.filter(
-                                                                company=self.request.user.company
-                                                                )
-            ItemFormSet = formset_factory(ItemForm)
+                                                                company=self.request.user.company,
+                                                                archive=False
+                                                                ).order_by('-date_updated')
             context['formset'] = ItemFormSet(self.request.POST)
- 
+            context['client_form'] = ClientForm(self.request.POST)
             return render(self.request, self.template_name, context)
+        return render(self.request, self.template_name, context)
 
 
 class InvoiceView(UserIsOwnerMixin, TemplateView):
