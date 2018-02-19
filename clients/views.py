@@ -22,10 +22,12 @@ class ClientListView(LoginRequiredMixin,TemplateView):
     template_name = 'clients/all_client.html'
 
     def get(self, *args, **kwargs):
-        """displaying the data of clients
+        """ Displaying the data of clients
         """
         context = {}
-        clients = Client.objects.filter(company=self.request.user.company, archive=False).order_by('-date_updated')
+        clients = Client.objects.filter(company=self.request.user.company, 
+                                        archive=False
+                                 ).order_by('-date_updated')
         query = self.request.GET.get("q")
         if query:
             clients = clients.filter( Q(client_company__icontains=query)|
