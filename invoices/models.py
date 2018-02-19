@@ -52,17 +52,15 @@ class Item(models.Model):
     amount = models.PositiveIntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.CharField(max_length=255)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, null=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE, 
                               related_name='items', 
                               default=''
                               )
-    quantity = models.PositiveIntegerField(null=True, blank=True)
-    rate = models.PositiveIntegerField(null=True, blank=True)
+    quantity = models.PositiveIntegerField()
+    rate = models.PositiveIntegerField()
 
     def __str__(self):
         return f"{self.description}"
-
-
