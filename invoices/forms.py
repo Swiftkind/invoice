@@ -29,6 +29,7 @@ class InvoiceForm(forms.ModelForm):
                    'remarks',
                    'description', 
                    'payment_status',
+                   'subtotal',
                    )
 
     def __init__(self,*args, **kwargs):
@@ -117,11 +118,8 @@ class BaseItemFormSet(BaseFormSet):
 
         for count,form in enumerate(self.forms):
             if not form.data['form-'+str(count)+'-description']:
-                print("not description")
                 raise forms.ValidationError("Description is required!")
             if not form.data['form-'+str(count)+'-quantity']:
-                print("not qty")
                 raise forms.ValidationError("Quantity is required!")
             if not form.data['form-'+str(count)+'-rate']:
-                print("not rate")
                 raise forms.ValidationError("Rate is required!")
