@@ -13,25 +13,131 @@
 </div>
 {% endif %}
 
-
 <div class="col-md-3">
   <div align="center" class="col-md-12"><h3>Invoice</h3></div>
+  {% if not invoices %}
+    <span>No invoices yet</span>
+  {% endif %}
   {% for invoice in invoices  %}
   <div class="col-md-12 invoice-data" id="{{ invoice.id }}">
     <div class="col-md-2">
-      <input type="checkbox" class = "chcktbl" /></div>
+      <input type="checkbox" class = "chcktbl" />
+    </div>
     <div class="col-md-10">
-      <div class="col-md-12">{{ invoice.client.client_company }}</div>
-      <div class="col-md-12">{{ invoice.get_invoice_number }}</div>
-       <div class="col-md-12">{{ invoice.due_date }}</div>
-       <div class="col-md-12">{{ invoice.status }}</div>
+      <div class="col-md-12">{{ invoice.client.client_company|title }}</div>
+      <div class="col-md-12">{{ invoice.client.get_prefix|upper }}: {{ invoice }}</div>
+       <div class="col-md-12">{{ invoice.due_date|date:"M d, Y" }}</div>
+       <div class="col-md-12">
+          {% if invoice.status == 'sent' %}
+          <span class="sent">|{{ invoice.status|title }} </span>
+          {% elif invoice.status == 'draft' %}
+          <span class="draft">|{{ invoice.status|title }} </span>
+          {% endif %}
+       </div>
     </div>
   </div>
   {% endfor %}
 </div>
 
 <div class="col-md-9 invoice-content">
-  <div class="col-md-12 invoice-box-form" >
+  <div id="invView" class="hidden">
+      <div class="col-md-12"><label>Invoice Info</label></div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Invoice #:</label>
+        </div>
+        <div class="col-md-9">
+          <span id="invNum"></span>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Description:</label>
+        </div>
+        <div class="col-md-9">
+          <span id="invDesc"></span>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Client:</label>
+        </div>
+        <div class="col-md-9">
+          <span id="invClient"></span>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Payment Status:</label>
+        </div>
+        <div class="col-md-9">
+          <span id="invPayStat"></span>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Item/s :</label>
+        </div>
+        <div class="col-md-9">
+        </div>
+      </div>
+      <div class="col-md-12">
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Amount</th>
+            </tr>
+            <tr id="itemsRow" class="hidden">
+              <td class="itemDesc"></td>
+              <td class="itemQty"></td>
+              <td class="itemRate"></td>
+              <td class="itemAmount"></td>
+            </tr>
+          </thead>
+          <tbody id="itemsTbody">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-12">
+         <div class="col-md-8"></div>
+         <div class="col-md-4" align="center">Subtotal:<span id="invSubTotal"></span></div>
+       </div>
+       <div class="col-md-12">
+         <div class="col-md-8"></div>
+         <div class="col-md-4" align="center">Total:<span id="invTotal"></span></div>
+       </div>
+
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Invoice date:</label>
+        </div>
+        <div class="col-md-9">
+          <span id="invDate"></span>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Due date:</label>
+        </div>
+        <div class="col-md-9">
+          <span id="invDueDate"></span>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-3">
+          <label >Remarks :</label>
+        </div>
+        <div class="col-md-9">
+          <span id="invRem"></span>
+        </div>
+      </div>
+    </div>
+
+  <div class="col-md-12" id="invForm" >
     <form method="POST" novalidate>
       {% csrf_token %}
       <div>
@@ -123,47 +229,40 @@
 
         <div class="row-item col-md-12">
           {{ formset.management_form }}
-
           {% for form in formset %}
-
-
-           <div class="col-md-12">
-
+          <div class="col-md-12">
           {% if formset.non_form_errors %}
-
-             {{ form.non_form_errors }}
-             {% for error in formset.non_form_errors %}
-            {{ error|escape }}
-        {% endfor %}
-        {% endif %}
-
-            
-             {% if form.description.errors %}
-              <span>
-                [{{ forloop.counter }}]description error: {{ form.description.errors.as_text }}
-              </span>
-              <br>
-            {% endif %}
-            {% if form.quantity.errors %}
-              <span>
-              [{{ forloop.counter }}]quantity error: {{ form.quantity.errors.as_text }}
-              </span>
-              <br>
-            {% endif %}
-            {% if form.rate.errors %}
-              <span>
-              [{{ forloop.counter }}]rate error: {{ form.rate.errors.as_text }} 
-              </span>
-              <br>
-            {% endif %}
-            {% if form.amount.errors %}
-              <span>
-              [{{ forloop.counter }}]amount error: {{ form.amount.errors.as_text }}
-              </span>
-              <br>
-            {% endif %}
+            {{ form.non_form_errors }}
+            {% for error in formset.non_form_errors %}
+              {{ error|escape }}
+            {% endfor %}
+          {% endif %}
+          
+           {% if form.description.errors %}
+            <span>
+              [{{ forloop.counter }}]description error: {{ form.description.errors.as_text }}
+            </span>
+            <br>
+          {% endif %}
+          {% if form.quantity.errors %}
+            <span>
+            [{{ forloop.counter }}]quantity error: {{ form.quantity.errors.as_text }}
+            </span>
+            <br>
+          {% endif %}
+          {% if form.rate.errors %}
+            <span>
+            [{{ forloop.counter }}]rate error: {{ form.rate.errors.as_text }} 
+            </span>
+            <br>
+          {% endif %}
+          {% if form.amount.errors %}
+            <span>
+            [{{ forloop.counter }}]amount error: {{ form.amount.errors.as_text }}
+            </span>
+            <br>
+          {% endif %}
           </div>
-
 
           <div class="form-row row1 col-md-12" id="0">
               <div class="field-description col-md-3">
@@ -181,46 +280,36 @@
                 <a href="javascript:void(0)" id='id_form-0-delete'></a>
               </div>
           </div>
-
-
-
-         
-
-
           {% endfor %}
         </div>
        </div>
 
-       <div class="col-md-12">
-         <div class="col-md-6"></div>
-         <div class="col-md-6">
-           <div class="col-md-6 sub-total"></div>
-           <div class="col-md-6 sub-total"></div>
-         </div>
-       </div>
-
-        <div class="col-md-12">
-          <div class="col-md-2">
-            <label>Remarks</label>
-          </div>
-          <div class="col-md-10">
-            <div class="col-md-12">
-              <div class="col-md-3">
-                {{ invoice_form.remarks|attr:"placeholder:Remarks"|attr:"class:form-control"}}</div>
-                <div class="col-md-5">{{ invoice_form.remarks.errors.as_text }}</div>
-              </div>
-            </div>
-          </div>
+      <div class="col-md-12">
+        <div class="col-md-8">{{ invoice_form.subtotal|attr:"val:0"|attr:"hidden" }}</div>
+        <div class="col-md-4 sub-total" hidden></div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-2">
+          <label>Remarks</label>
+        </div>
+        <div class="col-md-10">
           <div class="col-md-12">
-            <br><hr>
-            <div class="col-md-8"></div>
-            <div class="col-md-4">  
-              <button type="" class="btn btn-primary">Cancel</button>
-              <button type="submit" class="btn btn-primary" id="save-draft">Save as Draft</button>
+            <div class="col-md-3">
+              {{ invoice_form.remarks|attr:"placeholder:Remarks"|attr:"class:form-control"}}</div>
+              <div class="col-md-5">{{ invoice_form.remarks.errors.as_text }}</div>
             </div>
-            <br>
-            <hr>
           </div>
+        </div>
+        <div class="col-md-12">
+          <br><hr>
+          <div class="col-md-8"></div>
+          <div class="col-md-4">  
+            <button type="" class="btn btn-primary">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="save-draft">Save as Draft</button>
+          </div>
+          <br>
+          <hr>
+        </div>
       </form>
     <div class="col-md-12 invoice-box"></div>
     </div>
@@ -338,7 +427,7 @@
   </div>
 </div>
 
-  {% endblock  %}
+{% endblock  %}
 
 {% block js %}
   <script>
