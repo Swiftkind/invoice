@@ -117,9 +117,11 @@ class InvoiceListView(LoginRequiredMixin ,TemplateView):
         """
         query = self.request.GET.get("q")
         if query:
-            invoices = invoices.filter(invoice_number__icontains=query)
+            invoices = invoices.filter(invoice_number__icontains=query
+                               ).order_by('-date_updated')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company)
+            invoices = Invoice.objects.filter(company=self.request.user.company
+                                      ).order_by('-date_updated')
         context = {}
         context['client_form'] = ClientForm()
         ItemFormSet = formset_factory(ItemForm, formset=BaseItemFormSet)
@@ -170,7 +172,8 @@ class InvoiceListView(LoginRequiredMixin ,TemplateView):
             messages.success(self.request, 'Invoice is successfully Added')
             return redirect('invoices')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company)
+            invoices = Invoice.objects.filter(company=self.request.user.company
+                                      ).order_by('-date_updated')
             context = {}
             context['invoices'] =  invoices 
             context['invoice_form'] = invoice_form
@@ -204,15 +207,23 @@ class InvoiceAjaxView(UserIsOwnerMixin, View):
     """
 
     def get(self, *args, **kwargs):
-        """Display pdf in browser
+        """Display invoice details
         """
         invoice = get_object_or_404(Invoice, id=kwargs['invoice_id'])
-        data = serializers.serialize('json', [invoice])
-        return JsonResponse({'invoice': data,
-                            },
-                              safe = False,
-                              status=200
-                            )
+        invoice_number = str(invoice)
+        client = str(invoice.client)
+        items = Item.objects.filter(invoice=kwargs['invoice_id'])
+        invoiceData = serializers.serialize('json', [invoice])
+        itemsData = serializers.serialize('json', items)
+        data = {
+            'client': client,
+            'invoice_number': invoice_number,
+            'invoice': invoiceData,
+            'items': itemsData,
+            'prefix': invoice.client.get_prefix(),
+        }
+        return JsonResponse(data, safe = False, status=200)
+
 
 
 class InvoiceAddView(LoginRequiredMixin,TemplateView):
