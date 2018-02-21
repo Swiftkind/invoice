@@ -1,11 +1,13 @@
 import tempfile , time, os, errno
 
+from django.core import serializers
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
 from django.db.models import Q
-from django.http import Http404, HttpResponse
+from django.forms import formset_factory
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import get_template
 from django.views import View
@@ -14,15 +16,13 @@ from django.views.generic import TemplateView
 
 from clients.forms import ClientForm
 from clients.models import Client
-from items.models import Item
 from invoices.mixins import PdfMixin, UserIsOwnerMixin
-from invoices.models import Invoice
-from invoices.forms import InvoiceForm, InvoiceEmailForm
+from invoices.models import Invoice, Item
+from invoices.forms import BaseItemFormSet, ItemForm, InvoiceForm, InvoiceEmailForm
 from users.models import User
 
 from xhtml2pdf import pisa 
 from io import BytesIO
-
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -64,7 +64,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
         return render(self.request, self.template_name, context=context)
 
 
-
 class MakeInvoiceView(LoginRequiredMixin,TemplateView):
     """Make an invoice for client
     """
@@ -77,8 +76,12 @@ class MakeInvoiceView(LoginRequiredMixin,TemplateView):
         context['client'] = get_object_or_404(Client, pk=kwargs['client_id'])
         context['invoice_form'] = InvoiceForm()
         context['invoice_form'].fields['client'].empty_label = None
-        context['invoice_form'].fields['client'].queryset =  Client.objects.filter(pk=kwargs['client_id'])
-        context['invoice_form'].fields['item'].queryset =  Item.objects.filter(company=self.request.user.company)
+        context['invoice_form'].fields['client'].queryset =  Client.objects.filter(
+                                                                            pk=kwargs['client_id']
+                                                                            )
+        context['invoice_form'].fields['item'].queryset =  Item.objects.filter(
+                                                                company=self.request.user.company
+                                                                )
         return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
@@ -98,10 +101,10 @@ class MakeInvoiceView(LoginRequiredMixin,TemplateView):
         else:
             context = {}
             context['invoice_form'] = invoice_form
-            context['invoice_form'].fields['client'].queryset =  Client.objects.filter(company=self.request.user.company)
-            context['invoice_form'].fields['item'].queryset =  Item.objects.filter(company=self.request.user.company)
+            context['invoice_form'].fields['client'].queryset =  Client.objects.filter(
+                                                                company=self.request.user.company
+                                                                )
         return render(self.request, self.template_name, context)
-
 
 
 class InvoiceListView(LoginRequiredMixin ,TemplateView):
@@ -112,14 +115,76 @@ class InvoiceListView(LoginRequiredMixin ,TemplateView):
     def get(self, *args, **kwargs):
         """Display invoices data
         """
-        context = {}
-        invoices = Invoice.objects.filter(company=self.request.user.company)
         query = self.request.GET.get("q")
         if query:
-            invoices = invoices.filter(invoice_number__icontains=query)
+            invoices = invoices.filter(invoice_number__icontains=query
+                               ).order_by('-date_updated')
+        else:
+            invoices = Invoice.objects.filter(company=self.request.user.company
+                                      ).order_by('-date_updated')
+        context = {}
+        context['client_form'] = ClientForm()
+        ItemFormSet = formset_factory(ItemForm, formset=BaseItemFormSet)
+        context['formset'] = ItemFormSet()
         context['invoices'] =  invoices 
+        context['invoice_form'] = InvoiceForm()
+        context['invoice_form'].fields['client'].queryset =  Client.objects.filter(
+                                                                company=self.request.user.company,
+                                                                archive=False
+                                                                ).order_by('-date_updated')
         return render(self.request, self.template_name, context)
 
+    def post(self, *args, **kwargs):
+        """ Get filled invoice form and create
+        """
+        ItemFormSet = formset_factory(ItemForm, formset=BaseItemFormSet)
+        formset = ItemFormSet(self.request.POST)
+        invoice_form = InvoiceForm(self.request.POST, company=self.request.user.company)
+
+        if  invoice_form.is_valid() and formset.is_valid():
+            # Save invoice
+            invoice = invoice_form.save(commit=False)
+            invoice.owner = self.request.user
+            invoice.company = self.request.user.company
+            invoice.save()
+
+            # Check latest item id
+            try:
+                latest = Item.objects.latest('id')
+                item_id = latest.id + 1
+            except:
+                latest = 0
+                item_id = latest + 1
+
+            # Save item/s
+            for count,form in enumerate(formset):
+                item_form = ItemForm()
+                item_id = item_id + count
+                item = item_form.save(commit=False)
+                item.id = item_id
+                item.invoice = invoice
+                item.owner = self.request.user
+                item.description = form.data['form-'+str(count)+'-description']
+                item.quantity = form.data['form-'+str(count)+'-quantity']
+                item.rate = form.data['form-'+str(count)+'-rate']
+                item.amount = int(item.rate) * int(item.quantity)
+                item.save()
+            messages.success(self.request, 'Invoice is successfully Added')
+            return redirect('invoices')
+        else:
+            invoices = Invoice.objects.filter(company=self.request.user.company
+                                      ).order_by('-date_updated')
+            context = {}
+            context['invoices'] =  invoices 
+            context['invoice_form'] = invoice_form
+            context['invoice_form'].fields['client'].queryset = Client.objects.filter(
+                                                                company=self.request.user.company,
+                                                                archive=False
+                                                                ).order_by('-date_updated')
+            context['formset'] = ItemFormSet(self.request.POST)
+            context['client_form'] = ClientForm(self.request.POST)
+            return render(self.request, self.template_name, context)
+        return render(self.request, self.template_name, context)
 
 
 class InvoiceView(UserIsOwnerMixin, TemplateView):
@@ -137,6 +202,29 @@ class InvoiceView(UserIsOwnerMixin, TemplateView):
         return render(self.request, self.template_name, context)
 
 
+class InvoiceAjaxView(UserIsOwnerMixin, View):
+    """View invoice information
+    """
+
+    def get(self, *args, **kwargs):
+        """Display invoice details
+        """
+        invoice = get_object_or_404(Invoice, id=kwargs['invoice_id'])
+        invoice_number = str(invoice)
+        client = str(invoice.client)
+        items = Item.objects.filter(invoice=kwargs['invoice_id'])
+        invoiceData = serializers.serialize('json', [invoice])
+        itemsData = serializers.serialize('json', items)
+        data = {
+            'client': client,
+            'invoice_number': invoice_number,
+            'invoice': invoiceData,
+            'items': itemsData,
+            'prefix': invoice.client.get_prefix(),
+        }
+        return JsonResponse(data, safe = False, status=200)
+
+
 
 class InvoiceAddView(LoginRequiredMixin,TemplateView):
     """Adding invoice
@@ -148,8 +236,9 @@ class InvoiceAddView(LoginRequiredMixin,TemplateView):
         """
         context = {}
         context['invoice_form'] = InvoiceForm()
-        context['invoice_form'].fields['client'].queryset =  Client.objects.filter(company=self.request.user.company)
-        context['invoice_form'].fields['item'].queryset =  Item.objects.filter(company=self.request.user.company)
+        context['invoice_form'].fields['client'].queryset =  Client.objects.filter(
+                                                                company=self.request.user.company
+                                                                )
         return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
@@ -166,8 +255,9 @@ class InvoiceAddView(LoginRequiredMixin,TemplateView):
         else:
             context = {}
             context['invoice_form'] = invoice_form
-            context['invoice_form'].fields['client'].queryset = Client.objects.filter(company=self.request.user.company)
-            context['invoice_form'].fields['item'].queryset = Item.objects.filter(company=self.request.user.company)
+            context['invoice_form'].fields['client'].queryset = Client.objects.filter(
+                                                                company=self.request.user.company
+                                                                )
         return render(self.request, self.template_name, context)
 
 
@@ -183,15 +273,19 @@ class InvoiceEditView(UserIsOwnerMixin,TemplateView):
         invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
         context = {}
         context['invoice_form'] = InvoiceForm(instance=invoice)
-        context['invoice_form'].fields['client'].queryset = Client.objects.filter(company=self.request.user.company)
-        context['invoice_form'].fields['item'].queryset = Item.objects.filter(company=self.request.user.company)
+        context['invoice_form'].fields['client'].queryset = Client.objects.filter(
+                                                                company=self.request.user.company
+                                                                )
         return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
         """Get filled invoice form and create invoice
         """
         invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
-        invoice_form = InvoiceForm(self.request.POST, instance=invoice, company=self.request.user.company)
+        invoice_form = InvoiceForm(self.request.POST, 
+                                   instance=invoice, 
+                                   company=self.request.user.company
+                                  )
         if  invoice_form.is_valid() :
             invoice_form.save()
             messages.success(self.request, 'Invoice is successfully updated')
@@ -199,8 +293,9 @@ class InvoiceEditView(UserIsOwnerMixin,TemplateView):
         else:
             context = {}
             context['invoice_form'] = InvoiceForm(self.request.POST)
-            context['invoice_form'].fields['client'].queryset = Client.objects.filter(company=self.request.user.company)
-            context['invoice_form'].fields['item'].queryset = Item.objects.filter(company=self.request.user.company)
+            context['invoice_form'].fields['client'].queryset = Client.objects.filter(
+                                                                company=self.request.user.company
+                                                                )
         return render(self.request, self.template_name, context)
 
 

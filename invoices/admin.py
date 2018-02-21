@@ -1,5 +1,13 @@
 from django.contrib import admin
-from invoices.models import Invoice
+from invoices.models import Invoice, Item
 
-# Register your models here.
-admin.site.register(Invoice)
+
+class ItemInline(admin.TabularInline):
+    model = Item
+
+class InvoiceAdmin(admin.ModelAdmin):
+    inlines = [ItemInline]
+
+
+admin.site.register(Invoice, InvoiceAdmin)
+admin.site.register(Item)
