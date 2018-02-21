@@ -34,15 +34,13 @@ class Invoice(models.Model):
     payment_status = models.BooleanField( default=False)
     pdf = models.FileField(upload_to=get_invoice_directory,null=True, blank=True)
     remarks = models.TextField(max_length=255,null=True, blank=True)
+    subtotal = models.PositiveIntegerField()
     status = models.CharField(max_length=10, choices=STATUS, default='draft')
 
     class Meta:
         unique_together = ('invoice_number', 'company')
 
     def __str__(self):
-        return f"{self.invoice_number}"
-
-    def get_invoice_number(self):
         return f"{self.invoice_number}".zfill(9)
 
 
