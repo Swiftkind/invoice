@@ -6,6 +6,20 @@ let formset = function() {
   let totalFormCounter;
   let arr = []
     
+  let subTotalComputation = function(){
+    // Sub-t0tal computation
+       $('.field-amount').each(function(counter){
+         arr[counter] = Number( $(this).text() )
+        });
+       let subTotal = 0
+       let totalForm = Number( $('#id_form-TOTAL_FORMS').val() );
+       for(let counter=0; counter<totalForm; counter++){
+         subTotal += arr[counter];
+       }
+       $('.sub-total').removeAttr('hidden');
+       $('.sub-total').text(subTotal)
+       $('input#id_subtotal').val(subTotal);
+  }
 
   let amountComputation = function(){
     // Total amount calculation
@@ -16,6 +30,7 @@ let formset = function() {
 
         if (!isNaN(total)){
           $(this).parent().children('.field-amount').text(total);
+          subTotalComputation();
         }
     });
     $('.field-rate').on('keydown keyup keypress focusout focus', function() {
@@ -25,8 +40,10 @@ let formset = function() {
 
         if (!isNaN(total)){
           $(this).parent().children('.field-amount').text(total);
+           subTotalComputation();
         }
     });
+       subTotalComputation(); 
   }
 
   // Display created elements
@@ -55,19 +72,11 @@ let formset = function() {
         let removeForm = $(this).parent().parent();
         removeForm.remove();
       }
+       subTotalComputation();
      });
 
-    amountComputation();
-
-    // Sub-t0tal computation
-     $('.field-amount').each(function(counter){
-       arr[counter] = Number( $(this).text() )
-      });
-     let subTotal = 0
-     for(let counter=0; counter<totalForm; counter++){
-       subTotal += arr[counter];
-     }
-     $('.sub-total').text(subTotal)
+      amountComputation();
+      subTotalComputation();
   }
 
   // Add order form
@@ -121,29 +130,10 @@ let formset = function() {
             $(this).attr('id', counter) ;
           });
         }
-       // Sub-t0tal computation
-       $('.field-amount').each(function(counter){
-         arr[counter] = Number( $(this).text() )
-        });
-       let subTotal = 0
-       for(let counter=0; counter<totalForm; counter++){
-         subTotal += arr[counter];
-       }
-       $('.sub-total').text(subTotal)
+        subTotalComputation();
        });
-
       amountComputation();
-
-      // Sub-t0tal computation
-       $('.field-amount').each(function(counter){
-         arr[counter] = Number( $(this).text() )
-        });
-       let subTotal = 0
-       for(let counter=0; counter<totalForm; counter++){
-         subTotal += arr[counter];
-       }
-       $('.sub-total').text(subTotal)
-      
+      subTotalComputation();
     }
   });
 };
