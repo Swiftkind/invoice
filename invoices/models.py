@@ -29,16 +29,16 @@ class Invoice(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               on_delete=models.CASCADE, 
                               related_name='invoice', 
-                              default=''
+                              default='',
                               )
     payment_status = models.BooleanField( default=False)
     pdf = models.FileField(upload_to=get_invoice_directory,null=True, blank=True)
     remarks = models.TextField(max_length=255,null=True, blank=True)
-    subtotal = models.PositiveIntegerField()
+    subtotal = models.PositiveIntegerField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS, default='draft')
 
     class Meta:
-        unique_together = ('invoice_number', 'company')
+        unique_together = ('company', 'invoice_number')
 
     def __str__(self):
         return f"{self.invoice_number}".zfill(9)
