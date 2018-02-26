@@ -2,7 +2,7 @@ import datetime
 
 from django import forms
 from django.conf import settings
-from django.forms import BaseFormSet, formset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 
 
 from clients.models import Client
@@ -36,6 +36,7 @@ class InvoiceForm(forms.ModelForm):
         """Invoice needs company for filtering
         """
         self.company = kwargs.pop('company', None)
+        self.invNumber = kwargs.pop('invNumber', None)
         return super(InvoiceForm, self).__init__(*args, **kwargs)
 
     def clean_invoice_date(self):
@@ -62,12 +63,13 @@ class InvoiceForm(forms.ModelForm):
         """ Invoice number unique together validation 
         """
         invoice_number = self.cleaned_data.get('invoice_number')
-        invoice_number_q = Invoice.objects.filter(invoice_number__exact=invoice_number, 
-                                                  company=self.company
-                                            )
+        invoice_number_q = Invoice.objects.filter(invoice_number=invoice_number, 
+                                                  company=self.company,
+                                           )
         if not self.instance :
             if invoice_number_q.exists():
                 raise forms.ValidationError("Invoice Number already exists:")
+
         if self.instance.invoice_number != invoice_number:
             if invoice_number_q.exists():
                 raise forms.ValidationError("Invoice Number already exists:")
@@ -107,19 +109,30 @@ class ItemForm(forms.ModelForm):
         model = Item
         fields = ('description',
                   'quantity',
-                  'rate'
-                )
+                  'rate',
+                  'amount',
+                 )
+
+""" Model formset
+"""
+ItemFormSet = modelformset_factory(
+    Item,
+    ItemForm,
+    extra=0,
+)
 
 
-class BaseItemFormSet(BaseFormSet):
-    def clean(self):
-        if any(self.errors):
-            return
-
-        for count,form in enumerate(self.forms):
-            if not form.data['form-'+str(count)+'-description']:
-                raise forms.ValidationError("Description is required!")
-            if not form.data['form-'+str(count)+'-quantity']:
-                raise forms.ValidationError("Quantity is required!")
-            if not form.data['form-'+str(count)+'-rate']:
-                raise forms.ValidationError("Rate is required!")
+""" Inline formset
+"""
+ItemInlineFormSet = inlineformset_factory(
+    Invoice,
+    Item,
+    extra = 0,
+    fields = ('amount',
+              'description',
+              'quantity',
+              'rate',
+    ),
+    formset =  ItemFormSet,
+    min_num = 1 ,
+)
