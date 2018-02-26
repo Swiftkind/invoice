@@ -1,6 +1,7 @@
 {% load staticfiles user_tag %}
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Invoice</title>
   <meta charset="utf-8">
@@ -8,18 +9,20 @@
   <!-- Font robot-->
   <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
   <!-- Bootstrap Style -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" 
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <!-- style -->
   <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">
 </head>
+
 <body>
-  <nav class="navbar navbar-color navbar-fixed-top" >
+  <nav class="navbar navbar-color navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
-          <span class="icon-bar"></span> 
+          <span class="icon-bar"></span>
         </button>
         <a href="{% url 'index' %}">
           <span class="navbar-brand">INVOICE</span>
@@ -33,7 +36,6 @@
               <span class="Dashboard">Dashboard</span>
             </a>
           </li>
-          
           <li><a href="{% url 'clients' %}"><span class="Clients">Clients</span></a></li>
           <li><a href="{% url 'invoices' %}"><span class="Invoices">Invoices</span></a></li>
         </ul>
@@ -50,64 +52,56 @@
               </div>
             </form>
           </li>
-          {% if request.path == '/invoices/' %}
-              <li><a href="{% url 'invoices' %} " class="create-invoice"><span class="user-name">CREATE INVOICE</span></a></li>
-          {% endif %}
-          <li><a><span class="user-name">Hello, {{ request.user.first_name|title }}!</span></a></li>
+
           <li>
-            <a class="user-dropdown" data-toggle="dropdown" href="#">
-              
-              <span >
-                <img src="{% get_profile_pic request.user.id %}"  class="img-circle user-image" >
-              </span> 
-              
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="{% url 'profile' request.user.id %}">Profile</a></li>
-              <li><a href="#">Settings</a></li>
-              <li class="user-out-header"><a href="{% url 'signout' %}"><span class="glyphicon glyphicon-log-out"></span> Signout</a></li>
-            </ul>
-          </li>
-        </ul>
-        {% else %}
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span>Signup</a></li>
-          <li><a href="{% url 'signin' %}"><span class="glyphicon glyphicon-log-in"></span>Signin</a></li>
-        </ul>
-        {% endif %}
-      </div>
+           <a href="{% url 'invoices' %}" id="create-invoice">
+            <span > CREATE INVOICE</span>
+          </a>
+        </li>
+
+        <li><a><span class="user-name">Hello, {{ request.user.first_name|title }}!</span></a></li>
+        <li>
+          <a class="user-dropdown" data-toggle="dropdown" href="#">
+            <span >
+              <img src="{% get_profile_pic request.user.id %}"  class="img-circle user-image" >
+            </span> 
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'profile' request.user.id %}">Profile</a></li>
+            <li><a href="#">Settings</a></li>
+            <li class="user-out-header"><a href="{% url 'signout' %}"><span class="glyphicon glyphicon-log-out"></span> Signout</a></li>
+          </ul>
+        </li>
+      </ul>
+      {% else %}
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span>Signup</a></li>
+        <li><a href="{% url 'signin' %}"><span class="glyphicon glyphicon-log-in"></span>Signin</a></li>
+      </ul>
+      {% endif %}
     </div>
-  </nav>
-  <div class="main">
-    {% if request.user.is_authenticated %}
-    <div class="col-md-12 content-auth">
-      {% block content_auth %}
-      {% endblock %}
-    </div>
-    {% endif %}
-    
-    {% if not request.user.is_authenticated %}
-    <div class="col-md-12 content-not-auth" >
-      {% block content_not_auth %}
-      {% endblock %}
-    </div>
-    {% endif %}
   </div>
+</nav>
+<div class="main">
+  {% if request.user.is_authenticated %}
+  <div class="col-md-12 content-auth">
+    {% block content_auth %} {% endblock %}
+  </div>
+  {% endif %} {% if not request.user.is_authenticated %}
+  <div class="col-md-12 content-not-auth">
+    {% block content_not_auth %} {% endblock %}
+  </div>
+  {% endif %}
+</div>
 
-  <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Bootstrap JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-  <!-- Bootstrap JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-   <!-- js -->
-  <script type="text/javascript" src="{% static 'js/invoice.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/custom.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/formset.js' %}"></script>
-
-{% block js %}
+{% block js %} 
 {% endblock %}
-
 </body>
 </html>
