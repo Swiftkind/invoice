@@ -2,13 +2,9 @@
 {% load widget_tweaks %}
 {% load client_tag %}
 
-
 {% block content_not_auth %}
-<hr><h1 align="center">Welcome Page</h1><hr>
+  <hr><h1 align="center">Welcome Page</h1><hr>
 {% endblock %}
-
-
-
 
 {% block content_auth %}
 {% if messages %}
@@ -21,7 +17,6 @@
   </ul>
 </div>
 {% endif %}
-
 
 <div class="home-dashboard">
   <div class="col-md-12 home-dashboard-head">
@@ -40,12 +35,10 @@
   </div>
 
   <div class="col-md-12 ">
-
-
     {% for invoice in invoices %}
     <ul>
       <li class="row-home-dashboard-data">
-        <a class="row-data" href="{% url 'invoice_view' invoice.id %}">
+        <a class="row-data" href="{% url 'invoices'  %}">
           <div class="col-md-4 data" align="left" >
             <img class="home-dashboard-logo-client-company img-circle" src="{%  get_client_company_logo invoice.client.id %}">&nbsp&nbsp
             <span><b>{{ invoice.client.client_company|title }}</b></span> |
