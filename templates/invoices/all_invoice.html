@@ -37,6 +37,12 @@
           <span class="draft">|{{ invoice.status|title }} </span> 
           {% endif %}
         </div>
+        <div class="col-md-12">
+          <a onclick="invoiceDelete(this.id)" 
+             id="{{ invoice.id }}">
+            Delete
+          </a>
+        </div>
       </div>
     </div>
     {% endfor %}
@@ -46,7 +52,11 @@
   <div class="col-md-9 invoice-content">
     <!-- Invoice view template -->
     <div id="invView" class="hidden">
-      <div class="col-md-12"><a name="invoiceURLEdit" href="">Edit</a></div>
+      <div class="col-md-12">
+        <a name="invoiceURLEdit" href="">
+          Edit
+        </a>
+      </div>
       <div class="col-md-12">
         <label>Invoice Info</label>
       </div>
