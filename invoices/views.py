@@ -36,18 +36,21 @@ class IndexView(LoginRequiredMixin, TemplateView):
     def get(self, *args, **kwargs):
         """ Display invoices, clients and client add form
         """
-        clients = Client.objects.filter(company=self.request.user.company)
-        invoices = Invoice.objects.filter(company=self.request.user.company)
-        context = {}
-        context['invoices'] = Invoice.objects.filter(company=self.request.user.company)
-        context['clients'] =  Client.objects.filter(company=self.request.user.company)
-        context['client_form'] = ClientForm() 
-
+        # Search
         query = self.request.GET.get("q")
         if query:
-            clients = clients.filter(display_name__icontains=query, owner=self.request.user)
+            clients = clients.filter(display_name__icontains=query, 
+                                     owner=self.request.user, 
+                                     archive=False,
+                              )
+        else:
+            clients = Client.objects.filter(company=self.request.user.company, archive=False, )
 
+        invoices = Invoice.objects.filter(company=self.request.user.company, archive=False, )
+        context = {}
+        context['invoices'] = invoices
         context['clients'] =  clients
+        context['client_form'] = ClientForm() 
         return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
@@ -64,8 +67,12 @@ class IndexView(LoginRequiredMixin, TemplateView):
         else:
             context = super().get_context_data(**kwargs)
             context['client_form'] = client_form
-            context['invoices'] = Invoice.objects.filter(company=self.request.user.company)
-            context['clients'] =  Client.objects.filter(company=self.request.user.company)
+            context['invoices'] = Invoice.objects.filter(company=self.request.user.company, 
+                                                         archive=False, 
+                                                  )
+            context['clients'] =  Client.objects.filter(company=self.request.user.company, 
+                                                        archive=False, 
+                                                )
         return render(self.request, self.template_name, context=context)
 
 
@@ -122,11 +129,11 @@ class InvoiceView(LoginRequiredMixin ,TemplateView):
         """
         query = self.request.GET.get("q")
         if query:
-            invoices = invoices.filter(invoice_number__icontains=query,
-                       ).order_by('-date_updated')
+            invoices = invoices.filter(invoice_number__icontains=query, archive=False, 
+                               ).order_by('-date_updated')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company,
-                       ).order_by('-date_updated')
+            invoices = Invoice.objects.filter(company=self.request.user.company, archive=False, 
+                                     ).order_by('-date_updated')
 
         formset = ItemInlineFormSet(queryset = Item.objects.none())
 
@@ -173,7 +180,7 @@ class InvoiceView(LoginRequiredMixin ,TemplateView):
             messages.success(self.request, 'Invoice is successfully Added')
             return redirect('invoices')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company,
+            invoices = Invoice.objects.filter(company=self.request.user.company, archive=False, 
                        ).order_by('-date_updated')
             
             context['invoices'] =  invoices 
@@ -196,10 +203,10 @@ class UpdateInvoiceForm(UserIsOwnerMixin, TemplateView):
     def get(self, *args, **kwargs):
         query = self.request.GET.get("q")
         if query:
-            invoices = invoices.filter(invoice_number__icontains=query,
+            invoices = invoices.filter(invoice_number__icontains=query, archive=False, 
                        ).order_by('-date_updated')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company,
+            invoices = Invoice.objects.filter(company=self.request.user.company, archive=False, 
                        ).order_by('-date_updated')
         
         invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
@@ -271,7 +278,7 @@ class UpdateInvoiceForm(UserIsOwnerMixin, TemplateView):
             messages.success(self.request, 'Invoice is successfully Updated')
             return redirect('invoices')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company,
+            invoices = Invoice.objects.filter(company=self.request.user.company, archive=False, 
                                       ).order_by('-date_updated')
             context['invoices'] =  invoices 
             context['invoice_form'] = invoice_form
@@ -291,7 +298,7 @@ class InvoiceAjaxView(UserIsOwnerMixin, View):
     def get(self, *args, **kwargs):
         """Display invoice details
         """
-        invoice = get_object_or_404(Invoice, id=kwargs['invoice_id'])
+        invoice = get_object_or_404(Invoice, id=kwargs['invoice_id'], archive=False, )
         invoice_number = str(invoice)
         client = str(invoice.client)
         items = Item.objects.filter(invoice=kwargs['invoice_id'])
@@ -307,16 +314,29 @@ class InvoiceAjaxView(UserIsOwnerMixin, View):
         return JsonResponse(data, safe = False, status=200)
 
 
-class InvoiceDeleteView(UserIsOwnerMixin,TemplateView):
-    """Delete invoice
+class InvoiceAjaxDelete(UserIsOwnerMixin, View):
+    """View invoice delete
     """
-    def get(self,  *args, **kwargs):
-        """Display invoice data
+    def get(self, *args, **kwargs):
+        """ Delete invoice
         """
-        invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
-        invoice.delete()
-        messages.error(self.request, 'Client is successfully deleted')
-        return redirect('invoices')
+        invoice = get_object_or_404(Invoice, id=kwargs['invoice_id'], archive=False, )
+        invoice.archive = True
+        invoice.save()
+        invoice_number = str(invoice)
+        client = str(invoice.client)
+        items = Item.objects.filter(invoice=kwargs['invoice_id'])
+        invoiceData = serializers.serialize('json', [invoice])
+        itemsData = serializers.serialize('json', items)
+        data = {
+            'client': client,
+            'invoice_number': invoice_number,
+            'invoice': invoiceData,
+            'items': itemsData,
+            'prefix': invoice.client.get_prefix(),
+        }
+        messages.success(self.request, 'Invoice is successfully Deleted')
+        return JsonResponse(data, safe = False, status=200)
 
 
 class PdfPreview(UserIsOwnerMixin, PdfMixin, View):

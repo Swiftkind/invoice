@@ -11,6 +11,7 @@ function invoiceJS() {
 
   function displayAddForm() {
     // Display add form
+    $('.alert-success').hide();
     $('#id_form-TOTAL_FORMS').val(1);
 
     let invForm = $('#invForm');
@@ -77,15 +78,35 @@ function invoiceJS() {
 }
 
 
+function invoiceDelete(id) {
+  // Invoice delete
+  $('.alert-success').hide();
+  if (confirm('Are you sure you want to delete this invoice?')) {
+    $.ajax({
+      method: 'GET',
+      url: "/invoice/ajax/delete/" + id + "",
+      dataType: 'json',
+      context: $(this),
+      success: function(resp) {
+        $('.alert-success').show();
+        $('div#'+id).remove();
+        $('.success').text('Invoice is successfully Deleted ');
+      },
+    });
+  }
+}
+
+
 function invoiceView(id) {
   // Invoice details
+  $('.alert-success').hide();
   $.ajax({
     method: 'GET',
     url: "/invoice/ajax/view/" + id + "",
     dataType: 'json',
     context: $(this),
     success: function(resp) {
-
+      $('.alert-success').hide();
       createInvoice();
 
       let invData = JSON.parse(resp.invoice);
