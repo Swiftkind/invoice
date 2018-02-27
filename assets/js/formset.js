@@ -1,140 +1,127 @@
 'use strict';
 
-let formset = function() {
+function formsetJS() {
 
-  let totalForm = Number( $('#id_form-TOTAL_FORMS').val() );
-  let totalFormCounter;
-  let arr = []
+  function clone(getLastForm) {
+    // Clone a form
+    let cloneForm = getLastForm.clone();
+    cloneForm.find('.field-description').children('input').val('');
+    cloneForm.find('.field-quantity').children('input').val('');
+    cloneForm.find('.field-rate').children('input').val('');
+    cloneForm.find('.field-amount').children('input').val('');
+    cloneForm.find('.field-quantity').children('input').attr('placeholder', '0');
+    cloneForm.find('.field-rate').children().attr('placeholder', '0');
+    cloneForm.find('.field-amount').children('span').text('0');
+    cloneForm.find('.field-amount').children('input').attr('placeholder', '0');
+    return cloneForm
+  }
+
+  function totalForm() {
+    // Get latest total form
+    return Number($('#id_form-TOTAL_FORMS').val())
+  }
+
+  function insert(lastForm, newForm) {
+    // Insert a form
+    newForm.insertAfter(lastForm);
+  }
+
+  function getLastForm() {
+    // Get the last form
+    return $('.form-row:last');
+  }
+
+  function addFormSet() {
+    // Add order form
+    let cloneForm = clone(getLastForm());
+    $('#id_form-TOTAL_FORMS').val(totalForm() + 1);
+    insert(getLastForm(), cloneForm);
+  }
+
+  function computationSubtotal() {
+      // Sub-t0tal computation
+    let arr = [];
+    let subTotal = 0
+    let totalForm = Number($('#id_form-TOTAL_FORMS').val());
+    $('.field-amount').each(function(counter) {
+      arr[counter] = Number($(this).children('input').val());
+    });
     
-  let subTotalComputation = function(){
-    // Sub-t0tal computation
-       $('.field-amount').each(function(counter){
-         arr[counter] = Number( $(this).text() )
-        });
-       let subTotal = 0
-       let totalForm = Number( $('#id_form-TOTAL_FORMS').val() );
-       for(let counter=0; counter<totalForm; counter++){
-         subTotal += arr[counter];
-       }
-       $('.sub-total').removeAttr('hidden');
-       $('.sub-total').text(subTotal)
-       $('input#id_subtotal').val(subTotal);
+    for (let counter = 0; counter < totalForm; counter++) {
+      subTotal += arr[counter];
+    }
+    $('#id-sub-total').text(subTotal);
+    $('input#id_subtotal').val(subTotal);
   }
 
-  let amountComputation = function(){
-    // Total amount calculation
-    $('.field-quantity').on('keydown keyup keypress focusout focus', function() {
-        let rate = $(this).parent().children('.field-rate').children().val();
-        let quantity = $(this).children().val();
-        let total = parseInt(rate) * parseInt(quantity);
+  function reIndex() {
+    // Re index order form id and name
+    $('.form-row').each(function(counter) {
 
-        if (!isNaN(total)){
-          $(this).parent().children('.field-amount').text(total);
-          subTotalComputation();
-        }
-    });
-    $('.field-rate').on('keydown keyup keypress focusout focus', function() {
-        let rate = $(this).children().val();
-        let quantity = $(this).parent().children('.field-quantity').children().val();
-        let total = parseInt(rate) * parseInt(quantity);
+      let description = $(this).find('.field-description');
+      let quantity = $(this).find('.field-quantity');
+      let rate = $(this).find('.field-rate');
+      let amount = $(this).find('.field-amount');
+      let del = $(this).find('.field-delete');
 
-        if (!isNaN(total)){
-          $(this).parent().children('.field-amount').text(total);
-           subTotalComputation();
-        }
+      $(this).attr('id', counter);
+      $(this).children('input').attr({
+          'id': 'id_form-' + counter + '-id',
+          'name': 'form-' + counter + '-id'
+      });
+
+      description.children().attr({
+          'id': 'id_form-' + counter + '-description',
+          'name': 'form-' + counter + '-description'
+      });
+      quantity.children().attr({
+          'id': 'id_form-' + counter + '-quantity',
+          'name': 'form-' + counter + '-quantity'
+      });
+      rate.children().attr({
+          'id': 'id_form-' + counter + '-rate',
+          'name': 'form-' + counter + '-rate'
+      });
+      amount.children('span').attr({
+          'id': 'id_form-' + counter + '-amount',
+          'name': 'form-' + counter + '-amount'
+      });
+      amount.children('input').attr({
+          'id': 'id_form-' + counter + '-amount',
+          'name': 'form-' + counter + '-amount'
+      });
+      del.children().attr({
+          'id': 'id_form-' + counter + '-delete',
+          'name': 'form-' + counter + '-delete'
+      });
+
+      let qty = Number(quantity.children().val());
+      let rte = Number(rate.children().val());
+      amount.children('span').text(qty * rte);
+      amount.children('input').val(qty * rte);
+
+      displayRemove();
+      computationSubtotal() ;
     });
-       subTotalComputation(); 
   }
 
-  // Display created elements
-  for(let counter=0; counter < totalForm; counter++){
-    let rowForm = $('.row-item').find('input[name="form-'+counter+'-description"]').parent().parent().attr('id',counter);
-    let del =  $('.form-row#'+counter).find('.field-delete').children().attr('id','id_form-'+counter+'-delete');
-
-    // Add remove text
-    if ( del.attr('id') != 'id_form-0-delete'){
-      del.text('remove');
-    }
-
-    let rate =  $('.form-row#'+counter).find('.field-rate').children().val();
-    let quantity =  $('.form-row#'+counter).find('.field-quantity').children().val();
-    let total = parseInt(rate) * parseInt(quantity);
-
-    if (!isNaN(total)){
-      $('.form-row#'+counter).find('.field-amount').text(total);
-    }
-
-   // Delete order form
-    $('a#id_form-'+counter+'-delete').on('click', function(){
-      let totalForm = Number( $('#id_form-TOTAL_FORMS').val() );
-      let newTotalForm = $('#id_form-TOTAL_FORMS').val(totalForm-1) ;
-      if ( $(this).attr('id') != 'id_form-0-delete' ) {
-        let removeForm = $(this).parent().parent();
-        removeForm.remove();
+  function displayRemove() {
+    // Display remove link
+    let del = $('.field-delete');
+    del.each(function() {
+      if ($(this).children('a').attr('id') != 'id_form-0-delete') {
+          $(this).children('a').text('remove');
       }
-       subTotalComputation();
-     });
-
-      amountComputation();
-      subTotalComputation();
+    });
   }
 
-  // Add order form
-  $('a.add-order').on('click', function(){
-    let totalForm = Number( $('#id_form-TOTAL_FORMS').val() );
-    let newTotalForm = $('#id_form-TOTAL_FORMS').val(totalForm+1) ;
-    totalFormCounter = newTotalForm
-
-    for(let counter=totalForm; counter < newTotalForm.val(); counter++){
-      let lastForm = $('.row-item').find('.form-row:last');
-      let newForm = lastForm.clone().attr('id', totalForm);
-      let prevNo = totalForm-1
-
-      newForm.find('input[name="form-'+prevNo+'-description"]')
-             .attr({name: 'form-'+totalForm+'-description', 
-                    id:'id_form-'+totalForm+'-description',
-              });
-
-      newForm.find('input[name="form-'+prevNo+'-quantity"]')
-             .attr({name: 'form-'+totalForm+'-quantity', 
-                    id:'id_form-'+totalForm+'-quantity',
-              });
-
-      newForm.find('input[name="form-'+prevNo+'-rate"]')
-             .attr({name: 'form-'+totalForm+'-rate', 
-                    id:'id_form-'+totalForm+'-rate',
-              });
-
-      newForm.find('[name="form-'+prevNo+'-amount"]')
-             .attr({name: 'form-'+totalForm+'-amount', 
-                    id:'id_form-'+totalForm+'-amount',
-              });
-
-      newForm.find('a[id="id_form-'+prevNo+'-delete"]')
-             .attr({id:'id_form-'+totalForm+'-delete',})
-             .text('remove');
-
-      newForm.find('input').val('');
-      newForm.find('div.field-amount').text('');
-      newForm.insertAfter($('.form-row:last'));
-
-      // Delete order form
-      $('a#id_form-'+totalForm+'-delete').on('click', function(){
-        let totalForm = Number( $('#id_form-TOTAL_FORMS').val() );
-        let newTotalForm = $('#id_form-TOTAL_FORMS').val(totalForm-1) ;
-        if ( $(this).attr('id') != 'id_form-0-delete' ) {
-          let removeForm = $(this).parent().parent();
-          removeForm.remove();
-          let maxHitTotalForm = Number(totalFormCounter.val() )+1;
-          $('.form-row').each(function (counter) {
-            $(this).attr('id', counter) ;
-          });
-        }
-        subTotalComputation();
-       });
-      amountComputation();
-      subTotalComputation();
-    }
-  });
-};
-
+  return {
+    totalForm: totalForm,
+    addFormSet: addFormSet,
+    clone: clone,
+    computationSubtotal: computationSubtotal,
+    reIndex: reIndex,
+    displayRemove: displayRemove,
+    main: function() {}
+  }
+}

@@ -1,50 +1,58 @@
-{% extends 'base.html' %}
-{% load widget_tweaks %}
-{% block content_auth %}
+{% extends 'base.html' %} 
+{% load staticfiles widget_tweaks %} 
 
+{% block content_auth %} 
 {% if messages %}
 <div class="alert alert-success alert-dismissable fade in">
-  <ul >
+  <ul>
     {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }} </li>
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }} </li>
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> 
     {% endfor %}
   </ul>
 </div>
 {% endif %}
 
+<!-- List of invoices-->
 <div class="col-md-3">
-  <div align="center" class="col-md-12"><h3>Invoice</h3></div>
-  {% if not invoices %}
-    <span>No invoices yet</span>
-  {% endif %}
-  {% for invoice in invoices  %}
-  <div class="col-md-12 invoice-data" id="{{ invoice.id }}">
-    <div class="col-md-2">
-      <input type="checkbox" class = "chcktbl" />
-    </div>
-    <div class="col-md-10">
-      <div class="col-md-12">{{ invoice.client.client_company|title }}</div>
-      <div class="col-md-12">{{ invoice.client.get_prefix|upper }}: {{ invoice }}</div>
-       <div class="col-md-12">{{ invoice.due_date|date:"M d, Y" }}</div>
-       <div class="col-md-12">
-          {% if invoice.status == 'sent' %}
-          <span class="sent">|{{ invoice.status|title }} </span>
-          {% elif invoice.status == 'draft' %}
-          <span class="draft">|{{ invoice.status|title }} </span>
-          {% endif %}
-       </div>
-    </div>
-  </div>
-  {% endfor %}
-</div>
+  <div align="center" class="col-md-12">
+    <h3>Invoice</h3></div>
+    {% if not invoices %}
+    <span>No invoices yet</span> 
+    {% endif %} 
 
-<div class="col-md-9 invoice-content">
-  <div id="invView" class="hidden">
-      <div class="col-md-12"><label>Invoice Info</label></div>
+    {% for invoice in invoices %}
+    <div class="col-md-12 invoice-data" 
+         id="{{ invoice.id }}"
+         onclick="invoiceView(this.id)" 
+         style="cursor: pointer;">
+      <div class="col-md-10">
+        <div class="col-md-12">{{ invoice.client.client_company|title }}</div>
+        <div class="col-md-12">{{ invoice.client.get_prefix|upper }}: {{ invoice }}</div>
+        <div class="col-md-12">{{ invoice.due_date|date:"M d, Y" }}</div>
+        <div class="col-md-12">
+          {% if invoice.status == 'sent' %}
+          <span class="sent">|{{ invoice.status|title }} </span> 
+          {% elif invoice.status == 'draft' %}
+          <span class="draft">|{{ invoice.status|title }} </span> 
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Invoice content -->
+  <div class="col-md-9 invoice-content">
+    <!-- Invoice view template -->
+    <div id="invView" class="hidden">
+      <div class="col-md-12"><a name="invoiceURLEdit" href="">Edit</a></div>
+      <div class="col-md-12">
+        <label>Invoice Info</label>
+      </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Invoice #:</label>
+          <label>Invoice #:</label>
         </div>
         <div class="col-md-9">
           <span id="invNum"></span>
@@ -52,7 +60,7 @@
       </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Description:</label>
+          <label>Description:</label>
         </div>
         <div class="col-md-9">
           <span id="invDesc"></span>
@@ -60,7 +68,7 @@
       </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Client:</label>
+          <label>Client:</label>
         </div>
         <div class="col-md-9">
           <span id="invClient"></span>
@@ -68,7 +76,7 @@
       </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Payment Status:</label>
+          <label>Payment Status:</label>
         </div>
         <div class="col-md-9">
           <span id="invPayStat"></span>
@@ -76,7 +84,7 @@
       </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Item/s :</label>
+          <label>Item/s :</label>
         </div>
         <div class="col-md-9">
         </div>
@@ -101,19 +109,17 @@
           </tbody>
         </table>
       </div>
-
       <div class="col-md-12">
-         <div class="col-md-8"></div>
-         <div class="col-md-4" align="center">Subtotal:<span id="invSubTotal"></span></div>
-       </div>
-       <div class="col-md-12">
-         <div class="col-md-8"></div>
-         <div class="col-md-4" align="center">Total:<span id="invTotal"></span></div>
-       </div>
-
+        <div class="col-md-8"></div>
+        <div class="col-md-4" align="center">Subtotal:<span id="invSubTotal"></span></div>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-8"></div>
+        <div class="col-md-4" align="center">Total:<span id="invTotal"></span></div>
+      </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Invoice date:</label>
+          <label>Invoice date:</label>
         </div>
         <div class="col-md-9">
           <span id="invDate"></span>
@@ -121,7 +127,7 @@
       </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Due date:</label>
+          <label>Due date:</label>
         </div>
         <div class="col-md-9">
           <span id="invDueDate"></span>
@@ -129,309 +135,322 @@
       </div>
       <div class="col-md-12">
         <div class="col-md-3">
-          <label >Remarks :</label>
+          <label>Remarks :</label>
         </div>
         <div class="col-md-9">
           <span id="invRem"></span>
         </div>
       </div>
     </div>
+    <!-- /Invoice view template -->
 
-  <div class="col-md-12" id="invForm" >
-    <form method="POST" novalidate>
-      {% csrf_token %}
-      <div>
-      <h4>New Invoice</h4><hr>
-      <div class="col-md-12" >
-        <div class="col-md-3">
-          <label >Invoice number*:</label>
-        </div>
-        <div class="col-md-9">
-          <div class="col-md-12">
-            <div class="col-md-3">
-              {{ invoice_form.invoice_number |attr:"placeholder:Invoice #"|attr:"class:form-control" }}
-            </div>
-            <div class="col-md-5">
-              {{ invoice_form.invoice_number.errors.as_text }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-12" >
-        <div class="col-md-3">
-          <label >Invoice Description:</label>
-        </div>
-        <div class="col-md-9">
-          <div class="col-md-12">
-            <div class="col-md-3">
-              {{ invoice_form.description |attr:"placeholder:Description"|attr:"class:form-control" }}
-            </div>
-            <div class="col-md-5">
-              {{ invoice_form.description.errors.as_text }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-12">
-        <div class="col-md-3">
-          <label >Client Name*:</label>
-        </div>
-        <div class="col-md-9">
-          <div class="col-md-12">
-            <div class="col-md-3">{{ invoice_form.client }}</div>
-             <div class="col-md-3"><a href="#" id="add-client" data-toggle="modal" data-target="#ClientAddModal">+ Add Client</a></div>
-            <dv class="col-md-5">{{ invoice_form.client.errors.as_text }}</div>
-          </div>
-        </div>
-        <div class="col-md-12">
-        <div class="col-md-3">
-          <label >Invoice Date*:</label>
-        </div>
-        <div class="col-md-9">
-          <div class="col-md-12">
-            <div class="col-md-3">
-              {{ invoice_form.invoice_date|attr:"placeholder: yyyy-mm-dd"|attr:"class:form-control" }}
-            </div>
-            <div class="col-md-5">
-              {{ invoice_form.invoice_date.errors.as_text }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-12">
-        <div class="col-md-3">
-          <label >Due date*:</label>
-        </div>
-        <div class="col-md-9">
-          <div class="col-md-12">
-            <div class="col-md-3">
-              {{ invoice_form.due_date|attr:"placeholder: yyyy-mm-dd"|attr:"class:form-control"  }}</div>
-              <div class="col-md-5">{{ invoice_form.due_date.errors.as_text }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-12 item" >
-        <div class="col-md-6">
-          <label >Item *:</label>
-        </div>
-        <div class="col-md-6">
-          <a href="javascript:void(0)" class="add-order">Add order</a>
-        </div>
-
-        <div class="col-md-12">
-          <div class="col-md-3">Order description</div>
-          <div class="col-md-2">Qty</div>
-          <div class="col-md-3">Rate</div>
-          <div class="col-md-3">Amount</div>
-          <div class="col-md-1"></div>
-        </div>
-
-        <div class="row-item col-md-12">
-          {{ formset.management_form }}
-          {% for form in formset %}
-          <div class="col-md-12">
-          {% if formset.non_form_errors %}
-            {{ form.non_form_errors }}
-            {% for error in formset.non_form_errors %}
-              {{ error|escape }}
-            {% endfor %}
-          {% endif %}
-          
-           {% if form.description.errors %}
-            <span>
-              [{{ forloop.counter }}]description error: {{ form.description.errors.as_text }}
-            </span>
-            <br>
-          {% endif %}
-          {% if form.quantity.errors %}
-            <span>
-            [{{ forloop.counter }}]quantity error: {{ form.quantity.errors.as_text }}
-            </span>
-            <br>
-          {% endif %}
-          {% if form.rate.errors %}
-            <span>
-            [{{ forloop.counter }}]rate error: {{ form.rate.errors.as_text }} 
-            </span>
-            <br>
-          {% endif %}
-          {% if form.amount.errors %}
-            <span>
-            [{{ forloop.counter }}]amount error: {{ form.amount.errors.as_text }}
-            </span>
-            <br>
-          {% endif %}
-          </div>
-
-          <div class="form-row row1 col-md-12" id="0">
-              <div class="field-description col-md-3">
-                  {{ form.description|attr:"class:form-control"|attr:"required:True" }}
-              </div>
-              <div class="field-quantity col-md-2">
-                  {{ form.quantity|attr:"class:form-control" }}
-              </div>
-              <div class="field-rate col-md-3">
-                  {{ form.rate|attr:"class:form-control" }}
-              </div>
-               <div class="field-amount col-md-3">
-              </div>
-              <div class="field-delete col-md-1">
-                <a href="javascript:void(0)" id='id_form-0-delete'></a>
-              </div>
-          </div>
-          {% endfor %}
-        </div>
-       </div>
-
-      <div class="col-md-12">
-        <div class="col-md-8">{{ invoice_form.subtotal|attr:"val:0"|attr:"hidden" }}</div>
-        <div class="col-md-4 sub-total" hidden></div>
-      </div>
-      <div class="col-md-12">
-        <div class="col-md-2">
-          <label>Remarks</label>
-        </div>
-        <div class="col-md-10">
-          <div class="col-md-12">
-            <div class="col-md-3">
-              {{ invoice_form.remarks|attr:"placeholder:Remarks"|attr:"class:form-control"}}</div>
-              <div class="col-md-5">{{ invoice_form.remarks.errors.as_text }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-12">
-          <br><hr>
-          <div class="col-md-8"></div>
-          <div class="col-md-4">  
-            <button type="" class="btn btn-primary">Cancel</button>
-            <button type="submit" class="btn btn-primary" id="save-draft">Save as Draft</button>
-          </div>
-          <br>
+    <!-- Invoice add form -->
+    <div id="invForm">
+      <form method="POST" novalidate>
+        {% csrf_token %}
+        <div>
+          <h4>New Invoice</h4>
           <hr>
+          <div class="col-md-12">
+            <div class="col-md-3">
+              <label>Invoice number*:</label>
+            </div>
+            <div class="col-md-9">
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  {{ invoice_form.invoice_number |attr:"placeholder:Invoice #"|add_class:"form-control" }}
+                </div>
+                <div class="col-md-5 error">
+                  {{ invoice_form.invoice_number.errors.as_text }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-3">
+              <label>Invoice Description:</label>
+            </div>
+            <div class="col-md-9">
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  {{ invoice_form.description |attr:"placeholder:Description"|add_class:"form-control" }}
+                </div>
+                <div class="col-md-5 error">
+                  {{ invoice_form.description.errors.as_text }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-3">
+              <label>Client Name*:</label>
+            </div>
+            <div class="col-md-9">
+              <div class="col-md-12">
+                <div class="col-md-3">{{ invoice_form.client }}</div>
+                <div class="col-md-3">
+                  <a href="#" id="add-client" data-toggle="modal" data-target="#ClientAddModal">
+                  + Add Client
+                  </a>
+                </div>
+                <dv class="col-md-5 error">{{ invoice_form.client.errors.as_text }}</div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  <label>Invoice Date*:</label>
+                </div>
+                <div class="col-md-9">
+                  <div class="col-md-12">
+                    <div class="col-md-3">
+                      {{ invoice_form.invoice_date|attr:"placeholder: yyyy-mm-dd"|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-5 error">
+                      {{ invoice_form.invoice_date.errors.as_text }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  <label>Due date*:</label>
+                </div>
+                <div class="col-md-9">
+                  <div class="col-md-12">
+                    <div class="col-md-3">
+                    {{ invoice_form.due_date|attr:"placeholder: yyyy-mm-dd"|add_class:"form-control" }}</div>
+                    <div class="col-md-5 error">{{ invoice_form.due_date.errors.as_text }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 item">
+              <div class="col-md-6">
+                <label>Item *:</label>
+              </div>
+              <div class="col-md-6">
+                <a onclick="addOrder()" id="id-add-order" style="cursor: pointer;">Add order</a>
+              </div>
+              <div class="col-md-12">
+                <div class="col-md-3">Order description</div>
+                <div class="col-md-2">Qty</div>
+                <div class="col-md-3">Rate</div>
+                <div class="col-md-3">Amount</div>
+                <div class="col-md-1"></div>
+              </div>
+              <div class="row-item col-md-12 ">
+                {{ formset.management_form }} 
+                {% for form in formset %}
+                <div class="col-md-12 error">
+                  {% if formset.non_form_errors %} 
+                  {{ form.non_form_errors }} 
+                  {% for error in formset.non_form_errors %} 
+                  {{ error|escape }} 
+                  {% endfor %} 
+                  {% endif %} 
+                  {% if form.description.errors %}
+                  <span>
+                    [{{ forloop.counter }}]description error: 
+                    {{ form.description.errors.as_text }}
+                  </span>
+                  <br> 
+                  {% endif %} 
+                  {% if form.quantity.errors %}
+                  <span>
+                    [{{ forloop.counter }}]quantity error: 
+                    {{ form.quantity.errors.as_text }}
+                  </span>
+                  <br> 
+                  {% endif %} 
+                  {% if form.rate.errors %}
+                  <span>
+                    [{{ forloop.counter }}]rate error: 
+                    {{ form.rate.errors.as_text }} 
+                  </span>
+                  <br> 
+                  {% endif %} 
+                  {% if form.amount.errors %}
+                  <span>
+                    [{{ forloop.counter }}]amount error: 
+                    {{ form.amount.errors.as_text }}
+                  </span>
+                  <br> 
+                  {% endif %}
+                </div>
+
+                <div class="form-row row1 col-md-12" id="0">
+                  {{form.id}}
+                  <div class="field-description col-md-3">
+                    {{ form.description|add_class:"form-control"}}
+                  </div>
+                  <div class="field-quantity col-md-2">
+                    {{ form.quantity|add_class:"form-control"|attr:"placeholder:0"|attr:"onclick:qtyCompute(this.id)"}}
+                  </div>
+                  <div class="field-rate col-md-3">
+                    {{ form.rate|add_class:"form-control"|attr:"placeholder:0"|attr:"onclick:rateCompute(this.id)" }}
+                  </div>
+                  <div class="field-amount col-md-3">
+                    <span id="id_form-0-amount">0</span> 
+                    {{ form.amount|attr:"hidden"}}
+                  </div>
+                  <div class="field-delete col-md-1">
+                    <a class="delete-row" 
+                       onclick="deleteRowOrder(this.id)" 
+                       id='id_form-0-delete' 
+                       style="cursor: pointer;">
+                    </a>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="col-md-8">
+                {{ invoice_form.subtotal|attr:"value:0"|add_class:"hidden" }}
+              </div>
+              <div class="col-md-4" id="id-sub-total">0</div>
+            </div>
+            <div class="col-md-12">
+              <div class="col-md-2">
+                <label>Remarks</label>
+              </div>
+              <div class="col-md-10">
+                <div class="col-md-12">
+                  <div class="col-md-3">
+                  {{ invoice_form.remarks|attr:"placeholder:Remarks"|add_class:"form-control"}}
+                  </div>
+                  <div class="col-md-5 error">{{ invoice_form.remarks.errors.as_text }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <br>
+              <hr>
+              <div class="col-md-8"></div>
+              <div class="col-md-4">
+                <button type="" class="btn btn-primary">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-draft">Save</button>
+              </div>
+              <br>
+              <hr>
+            </div>
+          </form>
+          <div class="col-md-12 invoice-box"></div>
         </div>
-      </form>
-    <div class="col-md-12 invoice-box"></div>
-    </div>
+        <!-- /Invoice add form -->
 
-    <!-- Modal -->
-<div id="ClientAddModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add Client</h4>
-      </div>
-      <div class="modal-body">
-        
-      {{ form.non_field_errors }}
-
-      <form method="POST" id="client-form-id" enctype="multipart/form-data" novalidate>
-      {% csrf_token %}
-        <div class="col-md-12">
-          <div class="col-md-12" >
-            <div class="col-md-2 ">
-              <label  >Primary contact*:</label>
-            </div>
-            <div class="col-md-10">
-              <div class="col-md-12">
-                <div class="col-md-3">
-                  {{ client_form.first_name|attr:"placeholder:First Name"|attr:"class:form-control"}}
-                </div>
-                <div class="col-md-9">
-                  {{ client_form.first_name.errors.as_text }}
-                </div>
+        <!-- Modal -->
+        <div id="ClientAddModal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Client</h4>
               </div>
-              <div class="col-md-12">
-                <div class="col-md-3">
-                  {{ client_form.last_name |attr:"placeholder:Last Name"|attr:"class:form-control"}}
-                </div>
-                <div class="col-md-9">
-                  {{ client_form.last_name.errors.as_text }}
-                </div>
+              <div class="modal-body">
+                {{ form.non_field_errors }}
+                <form method="POST" id="client-form-id" enctype="multipart/form-data" novalidate>
+                  {% csrf_token %}
+                  <div class="col-md-12">
+                    <div class="col-md-12">
+                      <div class="col-md-2 ">
+                        <label>Primary contact*:</label>
+                      </div>
+                      <div class="col-md-10">
+                        <div class="col-md-12">
+                          <div class="col-md-3">
+                            {{ client_form.first_name|attr:"placeholder:First Name"|add_class:"form-control"}}
+                          </div>
+                          <div class="col-md-9">
+                            {{ client_form.first_name.errors.as_text }}
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="col-md-3">
+                            {{ client_form.last_name |attr:"placeholder:Last Name"|add_class:"form-control"}}
+                          </div>
+                          <div class="col-md-9">
+                            {{ client_form.last_name.errors.as_text }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="col-md-2">
+                        <label>Company*:</label>
+                      </div>
+                      <div class="col-md-10">
+                        <div class="col-md-12">
+                          <div class="col-md-3">
+                            {{ client_form.client_company|attr:"placeholder:Company name"|attr:"value:"|add_class:"form-control" }}
+                          </div>
+                          <div class="col-md-9">
+                            {{ client_form.client_company.errors.as_text }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="col-md-2">
+                        <label>Company Logo:</label>
+                      </div>
+                      <div class="col-md-10">
+                        <div class="col-md-12">
+                          <div class="col-md-3">
+                            {{ client_form.client_company_logo }}
+                          </div>
+                          <div class="col-md-9">
+                            {{ client_form.client_company_logo.errors.as_text }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="col-md-2">
+                        <label>Email Address*:</label>
+                      </div>
+                      <div class="col-md-10">
+                        <div class="col-md-12">
+                          <div class="col-md-3">
+                            {{ client_form.email|attr:"placeholder:Email"|add_class:"form-control" }}
+                          </div>
+                          <div class="col-md-9">
+                            {{ client_form.email.errors.as_text }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="col-md-2">
+                        <label>Mobile Number*:</label>
+                      </div>
+                      <div class="col-md-10">
+                        <div class="col-md-12">
+                          <div class="col-md-3">
+                            {{ client_form.mobile |attr:"placeholder:+639XXXXXXXXX"|add_class:"form-control" }}
+                          </div>
+                          <div class="col-md-9">
+                            {{ client_form.mobile.errors.as_text }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-12" align="center">
+                      <button type="submit" class="btn btn-primary">Add Client</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               </div>
             </div>
-          </div>
-          <div class="col-md-12">
-            <div class="col-md-2">
-              <label >Company*:</label>
-            </div>
-            <div class="col-md-10">
-              <div class="col-md-12">
-                <div class="col-md-3">
-                  {{ client_form.client_company|attr:"placeholder:Company name"|attr:"value:"|attr:"class:form-control" }}
-                </div>
-                <div class="col-md-9">
-                  {{ client_form.client_company.errors.as_text }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-12">
-            <div class="col-md-2">
-              <label >Company Logo:</label>
-            </div>
-            <div class="col-md-10">
-              <div class="col-md-12">
-                <div class="col-md-3">
-                  {{ client_form.client_company_logo }}
-                </div>
-                <div class="col-md-9">
-                  {{ client_form.client_company_logo.errors.as_text }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-12">
-            <div class="col-md-2">
-              <label >Email Address*:</label>
-            </div>
-            <div class="col-md-10">
-              <div class="col-md-12">
-                <div class="col-md-3">
-                  {{ client_form.email|attr:"placeholder:Email"|attr:"class:form-control" }}
-                </div>
-                <div class="col-md-9">
-                  {{ client_form.email.errors.as_text }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-12">
-            <div class="col-md-2">
-              <label>Mobile Number*:</label>
-            </div>
-            <div class="col-md-10">
-              <div class="col-md-12">
-                <div class="col-md-3">
-                  {{ client_form.mobile |attr:"placeholder:+639XXXXXXXXX"|attr:"class:form-control" }}
-                </div>
-                <div class="col-md-9">
-                  {{ client_form.mobile.errors.as_text }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-12" align="center">
-            <button type="submit" class="btn btn-primary">Add Client</button>
           </div>
         </div>
-      </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-{% endblock  %}
+{% endblock %} 
 
 {% block js %}
-  <script>
-  formset();
-</script>
+<script type="text/javascript" src="{% static 'js/formset.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/invoice.js' %}"></script>
 {% endblock %}
-
