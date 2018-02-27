@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.forms import formset_factory
 from django.http import Http404, HttpResponse, JsonResponse
+from django.utils.datastructures import MultiValueDictKeyError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import get_template
 from django.views import View
@@ -121,13 +122,13 @@ class InvoiceView(LoginRequiredMixin ,TemplateView):
         """
         query = self.request.GET.get("q")
         if query:
-            invoices = invoices.filter(invoice_number__icontains=query
+            invoices = invoices.filter(invoice_number__icontains=query,
                        ).order_by('-date_updated')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company
+            invoices = Invoice.objects.filter(company=self.request.user.company,
                        ).order_by('-date_updated')
 
-        formset = OrderInlineFormSet(queryset = Item.objects.none())
+        formset = ItemInlineFormSet(queryset = Item.objects.none())
 
         context = {}
         context['client_form'] = ClientForm()
@@ -144,7 +145,7 @@ class InvoiceView(LoginRequiredMixin ,TemplateView):
         """ Create and Add invoice
         """
         invoice_form = InvoiceForm(self.request.POST, company=self.request.user.company)
-        formset = OrderInlineFormSet(self.request.POST, queryset = Item.objects.none())
+        formset = ItemInlineFormSet(self.request.POST, queryset = Item.objects.none())
         context = {}
 
         if  invoice_form.is_valid() and formset.is_valid():
@@ -172,7 +173,7 @@ class InvoiceView(LoginRequiredMixin ,TemplateView):
             messages.success(self.request, 'Invoice is successfully Added')
             return redirect('invoices')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company
+            invoices = Invoice.objects.filter(company=self.request.user.company,
                        ).order_by('-date_updated')
             
             context['invoices'] =  invoices 
@@ -193,12 +194,17 @@ class UpdateInvoiceForm(UserIsOwnerMixin, TemplateView):
     template_name = 'invoices/all_invoice.html'
 
     def get(self, *args, **kwargs):
-        invoices = Invoice.objects.filter(company=self.request.user.company
-                   ).order_by('-date_updated')
+        query = self.request.GET.get("q")
+        if query:
+            invoices = invoices.filter(invoice_number__icontains=query,
+                       ).order_by('-date_updated')
+        else:
+            invoices = Invoice.objects.filter(company=self.request.user.company,
+                       ).order_by('-date_updated')
         
         invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
         item = ItemForm(instance=invoice)
-        formset = OrderInlineFormSet(queryset = item.instance.item_set.all(), )
+        formset = ItemInlineFormSet(queryset = item.instance.item_set.all(), )
         
         context = {}
         context['formset'] = formset
@@ -211,27 +217,61 @@ class UpdateInvoiceForm(UserIsOwnerMixin, TemplateView):
         return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
+        
         invoice = get_object_or_404(Invoice, pk=kwargs['invoice_id'])
         invoice_form = InvoiceForm(self.request.POST, 
                                    company=self.request.user.company, 
                                    instance=invoice,
                         )
         item = ItemForm(instance=invoice)
-        formset = OrderInlineFormSet(self.request.POST, queryset = item.instance.item_set.all())
+        queryset = item.instance.item_set.all()
+        formset = ItemInlineFormSet(self.request.POST, queryset = queryset, )
         context = {}
-
+        
         if  invoice_form.is_valid() and formset.is_valid():
             invoice = invoice_form.save(commit=False)
             invoice.owner = self.request.user
             invoice.company = self.request.user.company
             invoice.save()
+
+            # Check latet item id
+            try:
+                latest = Item.objects.latest('id')
+                item_id = latest.id + 1
+            except:
+                latest = 0
+                item_id = latest + 1
+
+            data_id = []
+            q_id = item.instance.item_set.all().values_list('id', flat=True)
+            formset_id = [form_id['id'] for form_id in q_id.values()]
             items = formset.save(commit=False)
-            for item in items:
+            total_form = formset.data['form-TOTAL_FORMS']
+
+            # Identify remove form
+            if int(total_form) < q_id.count():
+                # Get the remained form
+                for count in range(q_id.count()):
+                    try:
+                        data_id.append( int(formset.data[f'form-{count}-id']) )
+                    except MultiValueDictKeyError as e:
+                        print(f"data id variable not exists: {e}")
+                # Delete item in the database
+                for form_id in formset_id:
+                    if form_id not in data_id:
+                        item = get_object_or_404(Item, pk=form_id)
+                        item.delete()
+            
+            # save item
+            for count,item in enumerate(items):
+                item.id = item_id+count
+                item.owner = self.request.user
+                item.invoice = invoice
                 item.save()
-            messages.success(self.request, 'Invoice is successfully Updates')
+            messages.success(self.request, 'Invoice is successfully Updated')
             return redirect('invoices')
         else:
-            invoices = Invoice.objects.filter(company=self.request.user.company
+            invoices = Invoice.objects.filter(company=self.request.user.company,
                                       ).order_by('-date_updated')
             context['invoices'] =  invoices 
             context['invoice_form'] = invoice_form
